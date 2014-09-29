@@ -1,0 +1,5 @@
+#scenario { margin: 1em; }
+
+#left,
+#shared,
+#right { display: block; width: 10em; float: left; margin: 0 1em; }
