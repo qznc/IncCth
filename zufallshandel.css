@@ -1,5 +1,43 @@
-#scenario { margin: 1em; }
+#scenario { width: 68em; margin: 1em auto; }
 
 #left,
 #shared,
-#right { display: block; width: 10em; float: left; margin: 0 1em; }
+#right { display: block; width: 20em; float: left; margin: 0 1em; }
+
+#right,
+#left {
+  padding: 0 2mm;
+  height: 5cm;
+  transition:         background-color 0.3s ease-in-out;
+  -moz-transition:    background-color 0.3s ease-in-out;
+  -webkit-transition: background-color 0.3s ease-in-out;
+}
+
+
+hr { margin: 1em auto; width: 60%; clear: both; height: 3px; }
+
+.important { width: 20em; padding: 0.2em; margin: 1em auto; }
+
+/* COLORS */
+#right:hover,
+#left:hover,
+body { background-color: #dde; color: #011; }
+
+#right,
+#left { background-color: #233; color: #233; }
+
+.important { background-color: #9aa; border: 2px solid #255; }
+
+hr { background-color: #686; }
+
+h1 { color: #699; }
+h2 { color: #686; }
+
+#timer { color: #686; }
+#timer.running { color: #000; }
+#timer.finished { color: #f00; }
+
+/* FONTS */
+.important { font-size: 1.2em; line-height: 1.4em;}
+#timer { font-size: 1.3em; line-height: 1em; }
+#timer.finished { font-weight: bold; }
