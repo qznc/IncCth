@@ -1,36 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Zufallshandel</title>
-  <link rel="stylesheet" type="text/css" href="zufallshandel.css" />
-  <script type="text/javascript" src="zufallshandel.js"></script>
+	<meta charset="UTF-8">
+	<title>Incremental Inn</title>
+	<link rel="stylesheet" type="text/css" href="incremental_inn.css" />
 </head>
 <body>
-<h1>Zufallshandel</h1>
-<p>Zwei Spieler. Eine Verhandlung. Jeweils geheime Informationen.</p>
-<button onclick="generate()">Generiere Szenario</button>
-<div id="scenario">
-  Button anklicken um Szenario zu generieren ...
-
-<p class="important">Bitte folge den Anweisungen für die Übung
-und zieh es bis zum Ende durch.
-Im anschließenden Gespräch ist Raum für Kritik.</p>
-<p>Viel Spaß!</p>
-</div>
-<hr style="clear: both;" />
-<button onclick="starttimer()">Start from 0</button>
-<button onclick="pausetimer()">Pause/Weiter</button>
-<span id="timer">00:00</span>
-<hr style="clear: both;" />
-<p>Abschließende Fragen:</p>
-<ul>
-<li>Welche Argumente hätte man noch bringen können?</li>
-<li>Würdest du mit deinem Gegenüber gerne wieder verhandeln?</li>
-<li>Wer hat gewonnen? Keiner? Beide?</li>
-<li>Welche Erwartungen hattest du zu Beginn?</li>
-<li>Wie effektiv wer die Verhandlungsstrategie?</li>
-<li>Wer das Ergebnis, das best-mögliche?</li>
-<li>Welche Gefühle waren im Spiel?</li>
-</ul>
+	<div id="board">
+		Counter is at <span id="counter"></span> now.
+	</div>
+	<div id="backstore" style="visibility:none;">
+	</div>
+	<script type="text/javascript" src="save.js"></script>
+	<script type="text/javascript" src="incremental_inn.js"></script>
 </body>
