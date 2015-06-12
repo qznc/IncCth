@@ -41,3 +41,13 @@ h2 { color: #686; }
 .important { font-size: 1.2em; line-height: 1.4em;}
 #timer { font-size: 1.3em; line-height: 1em; }
 #timer.finished { font-weight: bold; }
+
+/* POSITION & SIZE */
+#game { position: relative; display: block; width: 40em; height: 15em; margin: 1em auto; }
+#game section { position: absolute; display: block; top: 1.8em; left: 0; z-index: 0; background-color: #eee; width: 30em; }
+#game section:first-child { z-index: 1; }
+#game section h2 { position: absolute; width: 9em; height: 1.8em; top: -2em; background-color: #eee; }
+#game section:nth-child(2) h2 { left: 10em; }
+#game section:nth-child(3) h2 { left: 20em; }
+#game section:target { z-index: 2; }
+#game section:target h2 { background-color: #fdd; }

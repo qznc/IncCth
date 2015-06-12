@@ -21,7 +21,7 @@
 	}
 
 	function simulateOneDay() {
-		console.log("compute day "+STATE.day);
+		//console.log("compute day "+STATE.day);
 		STATE.day += 1;
 	}
 
