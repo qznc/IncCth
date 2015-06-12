@@ -1,33 +1,54 @@
 (function() {
 	const ID_GAMESTATE = "gstate";
 	const ADD_PER_SECOND = 3;
+	const SECONDS_PER_DAY = 2.78;
 	var STATE = Object();
 
 	function oneStep() {
 		var now = Date.now();
+		//console.log("step for "+elapsedTime_ms+"ms with counter = "+STATE.counter);
+		var simulation_seconds = STATE.lastStepTime || now;
+		while (simulation_seconds < now) {
+			simulation_seconds += SECONDS_PER_DAY * 1000;
+			simulateOneDay();
+		}
+
 		var elapsedTime_ms = Date.now() - STATE.lastStepTime;
 		STATE.lastStepTime = now;
-		//console.log("step for "+elapsedTime_ms+"ms with counter = "+STATE.counter);
-
 		STATE.counter += ADD_PER_SECOND * elapsedTime_ms / 1000;
 		var sc = document.getElementById("counter");
 		sc.innerHTML = STATE.counter | 0;
 	}
 
+	function simulateOneDay() {
+		console.log("compute day "+STATE.day);
+		STATE.day += 1;
+	}
+
 	function startGame() {
-		var s = Save.load(ID_GAMESTATE) || {};
-		setIfMissing(s, "counter", 0);
-		setIfMissing(s, "lastStepTime", Date.now());
-		setIfMissing(s, "seed_rng", new RNG(123));
-		STATE = s;
+		var s = JSON.parse(window.localStorage.getItem(ID_GAMESTATE));
+		if (!s) { /* new game, set initial state */
+			resetState();
+		} else { /* load old game */
+			STATE = s;
+		}
 		setInterval(oneStep, 1000);
 		setInterval(saveGame, 10*1000);
 		oneStep();
 	}
 
+	function resetState() {
+		STATE = {
+			"counter": 0,
+			"lastStepTime": Date.now(),
+			"day": 0,
+		};
+	}
+
 	function saveGame() {
-		Save.save(ID_GAMESTATE, STATE);
-		//console.log("saved");
+		var string = JSON.stringify(STATE);
+		window.localStorage.setItem(ID_GAMESTATE, string);
+		console.log("saved: "+string);
 	}
 
 	function setIfMissing(obj, key, val) {
@@ -57,7 +78,7 @@
 	}
 
 	function randInnName() {
-		var rng = STATE.seed_rng;
+		var rng = new RNG(STATE.day);
 		var adj = ["Prancing", "Dancing", "Drinking", "Jolly",
 			"Damned", "Dead", "Lost",
 			"Cold", "Hot",
