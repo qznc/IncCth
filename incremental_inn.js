@@ -1,5 +1,5 @@
 (function() {
-	const ID_GAMESTATE = "gstate";
+	const ID_GAMESTATE = "GAMESTATE";
 	const ADD_PER_SECOND = 3;
 	const SECONDS_PER_DAY = 2.78;
 	var STATE = Object();
@@ -32,23 +32,35 @@
 		} else { /* load old game */
 			STATE = s;
 		}
-		setInterval(oneStep, 1000);
+		setInterval(oneStep, 1900);
 		setInterval(saveGame, 10*1000);
 		oneStep();
 	}
 
 	function resetState() {
+		var now = new Date();
 		STATE = {
 			"counter": 0,
-			"lastStepTime": Date.now(),
+			"lastStepTime": now,
+			"startWeekday": now.getDay(),
 			"day": 0,
+			"goblins": {
+				"population": 4,
+				"level": 1,
+			},
+			"city": {
+				"population": 14,
+			},
+			"inn": {
+				"beverages": [],
+			}
 		};
 	}
 
 	function saveGame() {
-		var string = JSON.stringify(STATE);
-		window.localStorage.setItem(ID_GAMESTATE, string);
-		console.log("saved: "+string);
+		var str = JSON.stringify(STATE);
+		window.localStorage.setItem(ID_GAMESTATE, str);
+		console.log("saved: "+str);
 	}
 
 	function setIfMissing(obj, key, val) {
@@ -77,8 +89,7 @@
 		return n;
 	}
 
-	function randInnName() {
-		var rng = new RNG(STATE.day);
+	function randInnName(rng) {
 		var adj = ["Prancing", "Dancing", "Drinking", "Jolly",
 			"Damned", "Dead", "Lost",
 			"Cold", "Hot",
@@ -91,6 +102,26 @@
 			"Wizard", "Pirate", "Paladin", "Baron", "Rogue", "Bard",
 			"Deer", "Horse", "Oxen"];
 		return rng.choice(adj) +" "+ rng.choice(obj);
+	}
+
+	function randBeverageName(rng) {
+		var origin = randName(rng);
+		var type = ["beer", "wine", "ale", "met"];
+		var quality = ["common", "fine", "superb", "decent"];
+		return rng.choice(quality) +" "+ capitalizeFirst(rng.choice(type)) + " from " + origin;
+	}
+
+	function capitalizeFirst(name) {
+		return name.charAt(0).toUpperCase() + name.slice(1);
+	}
+
+	function randName(rng) {
+		var syllables = "abi,gail,bel,bra,ham,dair,son,lia,line,dolph,an,ai,dan,leen,ara,gorn,bo,ro,mir,sam,wise,fro,do,pip,in,gan,dalf,sau,ron,gim,li,as,cle,chit,ho,mu,li,do,kro,ne,me,ge,sym,na,la,ne,so,non,su,syst,via,se,ze,la,nip,au,go,bal,nit,dug,be,tu,lan,de,mor,chi,rin,gu,ri,na,tur,urd,chau,rog,gon,goth,mon,gli,vae,tug,val,ko,tu,go,ru,li,cal,ko,morg,ria,sa,ran,vau,gond,cor,tum,pe,non,hho,to,pit,so,ne,riel,sih,po,ki,el,hor,he,nin,zu,sar,ces,ma,ran,deo,li,de,va,he,fei,va,ror,fe,me,can,da,be,ju,sae,nel,phi,en,dor,do,ran,ther,ari,aran,qui,roth,os,tai,nal,war,wor,rad,wa,rald,ash,bu,ren,to,ria".split(",");
+		var name = rng.choice(syllables) + rng.choice(syllables);
+		/* maybe add a third syllable */
+		if (rng.nextRange(0,10) < 5)
+			name += rng.choice(syllables);
+		return capitalizeFirst(name);
 	}
 
 	function RNG(seed) {
@@ -120,7 +151,9 @@
 		return array[this.nextRange(0, array.length)];
 	}
 
+	var dummy_rng = new RNG(Date.now());
+	console.log("In the "+randInnName(dummy_rng)+" the innkeeper "+randName(dummy_rng)+" sells "+randBeverageName(dummy_rng)+".");
+
 	startGame();
-	console.log("Welcome to the "+randInnName()+"! Finest tavern here!");
 
 })();
