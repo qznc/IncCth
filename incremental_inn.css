@@ -22,6 +22,8 @@ body { font-size: 100%;
 #inntitle .inn,
 #inntitle .city { font-style: italic; }
 
+table a { text-decoration: underline; }
+
 /* POSITION & SIZE */
 #inntitle,
 #game { position: relative; display: block; width: 590px; }

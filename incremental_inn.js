@@ -1,3 +1,5 @@
+var Game = Game || {};
+
 (function() {
 	const ID_GAMESTATE = "GAMESTATE";
 	const ADD_PER_SECOND = 3;
@@ -355,8 +357,9 @@
 		return name +" ("+ race +" "+ heroclass +")";
 	}
 
-	var dummy_rng = new RNG(Date.now());
+	/* expose public API */
+	Game.reset = resetState;
+
 	startGame();
 	notify("In the "+innName+" the innkeeper "+innkeeperName+" sells "+beverageList[0].getName());
-
 })();
