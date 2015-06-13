@@ -1,5 +1,6 @@
 /* RESET */
-body,html,div,span,table,
+body,html,div,span,table,tr,td,
+p,li,
 h1, h2, h3, h4, h5 { font-weight: normal; font-size: inherit; margin: 0; }
 a { text-decoration: none; }
 
@@ -9,6 +10,7 @@ body { background-color: #100; }
 a,
 body { color: #d70; }
 
+#game .item,
 #game section,
 #game section h2 { background-color: #410; }
 #game section:target h2 { background-color: #620; }
@@ -22,6 +24,7 @@ body { font-size: 100%;
 #inntitle .inn,
 #inntitle .city { font-style: italic; }
 
+#game h2,
 table a { text-decoration: underline; }
 
 /* POSITION & SIZE */
@@ -37,7 +40,7 @@ table a { text-decoration: underline; }
 #game section:nth-child(3) h2 { left: 20em; }
 #game section:target { z-index: 2; }
 
-#timeline .item { margin: 1em 0; opacity: 1; }
+#timeline .item { padding: 2px 5px; margin: 5px 2px; opacity: 1; }
 #timeline .item.hidden { opacity: 0; }
 
 /* EFFECTS */
