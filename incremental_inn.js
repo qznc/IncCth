@@ -31,22 +31,57 @@
 
 	function simulateOneDay() {
 		//console.log("compute day "+STATE.day);
+		var rng = new RNG(STATE.day);
 		if (STATE.day % DAYS_PER_MONTH == 0)
-			simulateMonthStart();
+			simulateMonthStart(rng);
 		sellBooze();
 		monsterGrowth();
 		cityGrowth();
+		heroMoves(rng);
 		trimNotifications();
 		STATE.day += 1;
 	}
 
-	function simulateMonthStart() {
+	function simulateMonthStart(rng) {
 		notify("Start of month "+getMonth()+" in year "+getYear());
 	}
 
 	function sellBooze() { }
 	function monsterGrowth() { }
 	function cityGrowth() { }
+
+	function heroMoves(rng) {
+		var returning = [];
+		var leaving = [];
+		for (var i = 0; i < STATE.goblins.heroes.length; i++) {
+			if (rng.nextRange(0,30) < 3) { /* hero returns to the city */
+				var hero = STATE.goblins.heroes[i];
+				STATE.goblins.heroes.splice(i);
+				notify(""+getHeroName(hero.seed)+" returns from an adventure.");
+				returning.push(hero);
+			}
+		}
+		for (var i = 0; i < STATE.city.heroes.length; i++) {
+			if (rng.nextRange(0,10) < 5) { /* hero leaves the city */
+				var hero = STATE.city.heroes[i];
+				STATE.city.heroes.splice(i);
+				notify(""+getHeroName(hero.seed)+" goes on adventure.");
+				leaving.push(hero);
+			}
+		}
+		if (rng.nextRange(0,20) < 2) { /* new hero arrives */
+			var hero = createHero(rng.nextInt());
+			STATE.city.heroes.push(hero);
+			notify("New arrival: "+getHeroName(hero.seed));
+		}
+		/* actually add heroes to lists */
+		for (var i = 0; i < returning.length; i++) {
+			STATE.city.heroes.push(returning[i]);
+		}
+		for (var i = 0; i < leaving.length; i++) {
+			STATE.goblins.heroes.push(leaving[i]);
+		}
+	}
 
 	function startGame() {
 		var s = JSON.parse(window.localStorage.getItem(ID_GAMESTATE));
@@ -128,9 +163,11 @@
 			"goblins": {
 				"population": 4,
 				"level": 1,
+				"heroes": [],
 			},
 			"city": {
 				"population": 14,
+				"heroes": [],
 			},
 			"inn": {
 				"beverages": [],
@@ -249,6 +286,16 @@
 		return capitalizeFirst(name);
 	}
 
+	function randRace(rng) {
+		var races = "human,dwarven,elven,half-orcish,halfling,half-elven".split(",");
+		return rng.choice(races);
+	}
+
+	function randHeroClass(rng) {
+		var races = "fighter,wizard,rogue,paladin,barbarian,sorcerer,monk,priest,prince,pirate,tourist".split(",");
+		return rng.choice(races);
+	}
+
 	function RNG(seed) {
 		// LCG using GCC's constants
 		// see https://stackoverflow.com/questions/424292/seedable-javascript-random-number-generator
@@ -289,6 +336,23 @@
 		var rng = new RNG(this.seed);
 		var name = randBeverageName(rng);
 		return BEVERAGE_QUALITY_NAME[this.quality] +" "+ name;
+	}
+
+	function createHero(seed) {
+		var rng = new RNG(seed);
+		return {
+			"seed": seed,
+			"gold": rng.nextRange(10,100),
+			"level": rng.nextRange(1,3),
+		};
+	}
+
+	function getHeroName(seed) {
+		var rng = new RNG(seed);
+		var name = randName(rng);
+		var race = randRace(rng);
+		var heroclass = randHeroClass(rng);
+		return name +" ("+ race +" "+ heroclass +")";
 	}
 
 	var dummy_rng = new RNG(Date.now());
