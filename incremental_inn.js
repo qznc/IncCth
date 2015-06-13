@@ -31,9 +31,10 @@ var Game = Game || {};
 	}
 
 	function simulateOneDay() {
-		var daySeed = (STATE.day+1) * (STATE.globalSeed+1);
+		var daySeed = STATE.previousDaySeed;
 		console.log("day "+STATE.day+" with seed "+daySeed);
 		var rng = new RNG(daySeed);
+		STATE.previousDaySeed = rng.nextInt();
 		if (STATE.day % DAYS_PER_MONTH == 0)
 			simulateMonthStart(rng);
 		sellBooze();
@@ -157,10 +158,13 @@ var Game = Game || {};
 
 	function resetState() {
 		var now = new Date();
+		var globalSeed = now.getDay() + 11;
+		console.log("globalSeed: "+globalSeed);
 		STATE = {
 			"counter": 0,
 			"lastStepTime": now,
-			"globalSeed": now.getDay(),
+			"globalSeed": globalSeed,
+			"previousDaySeed": globalSeed,
 			"day": 0,
 			"goblins": {
 				"population": 4,
