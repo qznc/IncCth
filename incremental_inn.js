@@ -5,6 +5,8 @@
 	const BEVERAGE_COUNT = 11;
 	const MAX_NOTIFICATIONS = 6;
 	var STATE = Object();
+	var innName = "Joe";
+	var innkeeperName = "Joe";
 	var cityName = "Sitty";
 	var beverageList = [];
 
@@ -53,7 +55,11 @@
 	function initCachedState() {
 		/* Cached state is static wrt game. It is deterministically computed from the initial RNG seed, so no need to save it. */
 		var rng = new RNG(STATE.startWeekday);
+		innName = randInnName(rng);
+		innkeeperName = randName(rng);
 		cityName = randName(rng);
+		var h1 = document.getElementById("inntitle");
+		h1.innerHTML = 'The <span class="inn">'+innName+'</span> in <span class="city">'+cityName+'</span>';
 		generateBeverages(rng);
 	}
 
@@ -209,10 +215,7 @@
 	}
 
 	var dummy_rng = new RNG(Date.now());
-	console.log("In the "+randInnName(dummy_rng)+" the innkeeper "+randName(dummy_rng)+" sells "+randBeverageName(dummy_rng)+".");
-
 	startGame();
-	console.log(beverageList);
-	notify("Hello World");
+	notify("In the "+innName+" the innkeeper "+innkeeperName+" sells "+beverageList[0]);
 
 })();
