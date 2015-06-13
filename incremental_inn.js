@@ -94,6 +94,7 @@ var Game = Game || {};
 			STATE = s;
 		}
 		initCachedState();
+		refillAcquisitionTab();
 		setInterval(oneStep, 1900);
 		setInterval(saveGame, 30*1000);
 		oneStep();
