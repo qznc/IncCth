@@ -58,7 +58,7 @@ var Game = Game || {};
 		for (var i = 0; i < STATE.goblins.heroes.length; i++) {
 			if (rng.nextRange(0,30) < 3) { /* hero returns to the city */
 				var hero = STATE.goblins.heroes[i];
-				STATE.goblins.heroes.splice(i);
+				STATE.goblins.heroes.splice(i,1);
 				notify(""+getHeroName(hero.seed)+" returns from an adventure.");
 				returning.push(hero);
 			}
@@ -66,7 +66,7 @@ var Game = Game || {};
 		for (var i = 0; i < STATE.city.heroes.length; i++) {
 			if (rng.nextRange(0,10) < 5) { /* hero leaves the city */
 				var hero = STATE.city.heroes[i];
-				STATE.city.heroes.splice(i);
+				STATE.city.heroes.splice(i,1);
 				notify(""+getHeroName(hero.seed)+" goes on adventure.");
 				leaving.push(hero);
 			}
