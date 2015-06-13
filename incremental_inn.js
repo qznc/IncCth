@@ -2,7 +2,10 @@
 	const ID_GAMESTATE = "GAMESTATE";
 	const ADD_PER_SECOND = 3;
 	const SECONDS_PER_DAY = 2.78;
+	const BEVERAGE_COUNT = 11;
 	var STATE = Object();
+	var cityName = "Sitty";
+	var beverageList = [];
 
 	function oneStep() {
 		var now = Date.now();
@@ -22,8 +25,15 @@
 
 	function simulateOneDay() {
 		//console.log("compute day "+STATE.day);
+		sellBooze();
+		monsterGrowth();
+		cityGrowth();
 		STATE.day += 1;
 	}
+
+	function sellBooze() { }
+	function monsterGrowth() { }
+	function cityGrowth() { }
 
 	function startGame() {
 		var s = JSON.parse(window.localStorage.getItem(ID_GAMESTATE));
@@ -32,9 +42,24 @@
 		} else { /* load old game */
 			STATE = s;
 		}
+		initCachedState();
 		setInterval(oneStep, 1900);
 		setInterval(saveGame, 10*1000);
 		oneStep();
+	}
+
+	function initCachedState() {
+		/* Cached state is static wrt game. It is deterministically computed from the initial RNG seed, so no need to save it. */
+		var rng = new RNG(STATE.startWeekday);
+		cityName = randName(rng);
+		generateBeverages(rng);
+	}
+
+	function generateBeverages(rng) {
+		for (var i=0; i<BEVERAGE_COUNT; i++) {
+			var b = randBeverageName(rng);
+			beverageList.push(b);
+		}
 	}
 
 	function resetState() {
@@ -106,8 +131,8 @@
 
 	function randBeverageName(rng) {
 		var origin = randName(rng);
-		var type = ["beer", "wine", "ale", "met"];
-		var quality = ["common", "fine", "superb", "decent"];
+		var type = ["beer", "wine", "ale", "mead", "liquor", "cider", "whisky", "vodka", "sherry", "port"];
+		var quality = ["crappy", "common", "nice", "tasty", "fine", "superb", "decent"];
 		return rng.choice(quality) +" "+ capitalizeFirst(rng.choice(type)) + " from " + origin;
 	}
 
@@ -117,9 +142,12 @@
 
 	function randName(rng) {
 		var syllables = "abi,gail,bel,bra,ham,dair,son,lia,line,dolph,an,ai,dan,leen,ara,gorn,bo,ro,mir,sam,wise,fro,do,pip,in,gan,dalf,sau,ron,gim,li,as,cle,chit,ho,mu,li,do,kro,ne,me,ge,sym,na,la,ne,so,non,su,syst,via,se,ze,la,nip,au,go,bal,nit,dug,be,tu,lan,de,mor,chi,rin,gu,ri,na,tur,urd,chau,rog,gon,goth,mon,gli,vae,tug,val,ko,tu,go,ru,li,cal,ko,morg,ria,sa,ran,vau,gond,cor,tum,pe,non,hho,to,pit,so,ne,riel,sih,po,ki,el,hor,he,nin,zu,sar,ces,ma,ran,deo,li,de,va,he,fei,va,ror,fe,me,can,da,be,ju,sae,nel,phi,en,dor,do,ran,ther,ari,aran,qui,roth,os,tai,nal,war,wor,rad,wa,rald,ash,bu,ren,to,ria".split(",");
-		var name = rng.choice(syllables) + rng.choice(syllables);
+		var name = rng.choice(syllables)
+		/* like add a second syllable */
+		if (rng.nextRange(0,10) < 9)
+			name += rng.choice(syllables);
 		/* maybe add a third syllable */
-		if (rng.nextRange(0,10) < 5)
+		if (rng.nextRange(0,10) < 4)
 			name += rng.choice(syllables);
 		return capitalizeFirst(name);
 	}
@@ -155,5 +183,6 @@
 	console.log("In the "+randInnName(dummy_rng)+" the innkeeper "+randName(dummy_rng)+" sells "+randBeverageName(dummy_rng)+".");
 
 	startGame();
+	console.log(beverageList);
 
 })();
