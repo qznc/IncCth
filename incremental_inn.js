@@ -3,6 +3,7 @@
 	const ADD_PER_SECOND = 3;
 	const SECONDS_PER_DAY = 2.78;
 	const BEVERAGE_COUNT = 11;
+	const MAX_NOTIFICATIONS = 6;
 	var STATE = Object();
 	var cityName = "Sitty";
 	var beverageList = [];
@@ -28,6 +29,7 @@
 		sellBooze();
 		monsterGrowth();
 		cityGrowth();
+		trimNotifications();
 		STATE.day += 1;
 	}
 
@@ -82,10 +84,37 @@
 		};
 	}
 
+	function notify(msg) {
+		var timeline = document.getElementById("timeline");
+		var item = document.createElement("div");
+		item.className = "item hidden";
+		var p = document.createElement("p");
+		var t = document.createTextNode(msg);
+		p.appendChild(t);
+		item.appendChild(p);
+		timeline.insertBefore(item, timeline.childNodes[0]);
+		setTimeout(function() {
+			item.className = "item";
+		}, 0);
+	}
+
+	function trimNotifications() {
+		var timeline = document.getElementById("timeline");
+		if (timeline.childNodes.length > MAX_NOTIFICATIONS) {
+			var item = timeline.childNodes[timeline.childNodes.length - 1];
+			if (!item) return;
+			item.className = "item hidden";
+			setTimeout(function() {
+				timeline.removeChild(item);
+			}, 1000);
+		}
+	}
+
 	function saveGame() {
 		var str = JSON.stringify(STATE);
 		window.localStorage.setItem(ID_GAMESTATE, str);
 		console.log("saved: "+str);
+		notify("Saved game on day "+STATE.day);
 	}
 
 	function setIfMissing(obj, key, val) {
@@ -184,5 +213,6 @@
 
 	startGame();
 	console.log(beverageList);
+	notify("Hello World");
 
 })();

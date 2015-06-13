@@ -24,4 +24,11 @@ body { font-size: 100%; }
 #game section:nth-child(3) h2 { left: 20em; }
 #game section:target { z-index: 2; }
 
-#timeline .item { margin: 1em 0; }
+#timeline .item { margin: 1em 0; opacity: 1; }
+#timeline .item.hidden { opacity: 0; }
+
+/* EFFECTS */
+#timeline .item {
+	transition: opacity 1s;
+	-webkit-transition: opacity 1s;
+}
