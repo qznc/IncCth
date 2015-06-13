@@ -4,6 +4,8 @@
 	const SECONDS_PER_DAY = 2.78;
 	const BEVERAGE_COUNT = 11;
 	const MAX_NOTIFICATIONS = 6;
+	const DAYS_PER_MONTH = 30;
+	const MONTHS_PER_YEAR = 12;
 	var STATE = Object();
 	var innName = "Joe";
 	var innkeeperName = "Joe";
@@ -28,11 +30,17 @@
 
 	function simulateOneDay() {
 		//console.log("compute day "+STATE.day);
+		if (STATE.day % DAYS_PER_MONTH == 0)
+			simulateMonthStart();
 		sellBooze();
 		monsterGrowth();
 		cityGrowth();
 		trimNotifications();
 		STATE.day += 1;
+	}
+
+	function simulateMonthStart() {
+		notify("Start of month "+getMonth()+" in year "+getYear());
 	}
 
 	function sellBooze() { }
@@ -48,7 +56,7 @@
 		}
 		initCachedState();
 		setInterval(oneStep, 1900);
-		setInterval(saveGame, 10*1000);
+		setInterval(saveGame, 30*1000);
 		oneStep();
 	}
 
@@ -111,16 +119,31 @@
 			if (!item) return;
 			item.className = "item hidden";
 			setTimeout(function() {
+				if (item.parentNode != timeline)
+					return; /* things might have changed already */
 				timeline.removeChild(item);
 			}, 1000);
 		}
+	}
+
+	function getDay() {
+		return STATE.day % DAYS_PER_MONTH | 0;
+	}
+	function getMonth() {
+		return STATE.day / DAYS_PER_MONTH % MONTHS_PER_YEAR | 0;
+	}
+	function getYear() {
+		return STATE.day / DAYS_PER_MONTH / MONTHS_PER_YEAR | 0;
+	}
+	function getDateString() {
+		return "day "+getDay()+" in the "+(getMonth()+1)+". month of the year "+getYear();
 	}
 
 	function saveGame() {
 		var str = JSON.stringify(STATE);
 		window.localStorage.setItem(ID_GAMESTATE, str);
 		console.log("saved: "+str);
-		notify("Saved game on day "+STATE.day);
+		notify("Saved game on day "+STATE.day+" aka "+getDateString()+".");
 	}
 
 	function setIfMissing(obj, key, val) {
