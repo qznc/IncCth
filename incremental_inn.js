@@ -60,7 +60,7 @@ var Game = Game || {};
 			if (rng.nextRange(0,30) < 3) { /* hero returns to the city */
 				var hero = STATE.goblins.heroes[i];
 				STATE.goblins.heroes.splice(i,1);
-				notify(""+getHeroName(hero.seed)+" returns from an adventure.");
+				notify(""+getHeroShortName(hero.seed)+" returns from an adventure.");
 				returning.push(hero);
 			}
 		}
@@ -362,6 +362,11 @@ var Game = Game || {};
 		var race = randRace(rng);
 		var heroclass = randHeroClass(rng);
 		return name +" ("+ race +" "+ heroclass +")";
+	}
+
+	function getHeroShortName(seed) {
+		var rng = new RNG(seed);
+		return randName(rng);
 	}
 
 	/* expose public API */
