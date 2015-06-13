@@ -77,6 +77,45 @@
 			var b = new Beverage(rng.nextInt());
 			beverageList.push(b);
 		}
+		/* set initially used stuff */
+		beverageList[0].quality = 1;
+		beverageList[0].available = true;
+		beverageList[0].buy_quantity = 2;
+		beverageList[1].available = true;
+		refillAcquisitionTab();
+	}
+
+	function addElementWithText(parent, tag, text) {
+		var child = document.createElement(tag);
+		var txt = document.createTextNode(text);
+		child.appendChild(txt);
+		parent.appendChild(child);
+	}
+
+	function refillAcquisitionTab() {
+		var tab = document.getElementById("beverageList");
+		/* remove everything */
+		while (tab.firstChild) {
+			tab.removeChild(tab.firstChild);
+		}
+		/* add headline */
+		var tr = document.createElement("tr");
+		addElementWithText(tr, "th", "Name");
+		addElementWithText(tr, "th", "Buy");
+		addElementWithText(tr, "th", "Quantity");
+		addElementWithText(tr, "th", "Sell");
+		tab.appendChild(tr);
+		/* add available beverages */
+		for(var i = 0; i<beverageList.length; i++) {
+			var bev = beverageList[i];
+			if (!bev.available) continue;
+			tr = document.createElement("tr");
+			addElementWithText(tr, "td", capitalizeFirst(bev.getName()));
+			addElementWithText(tr, "td", bev.buy_price.toFixed(2));
+			addElementWithText(tr, "td", bev.buy_quantity | 0);
+			addElementWithText(tr, "td", bev.sell_price.toFixed(2));
+			tab.appendChild(tr);
+		}
 	}
 
 	function resetState() {
@@ -240,7 +279,11 @@
 	function Beverage(seed) {
 		this.seed = seed;
 		var rng = new RNG(seed);
-		this.quality = rng.nextRange(0,5) | 0;
+		this.quality = rng.nextRange(0,BEVERAGE_QUALITY_NAME.length) | 0;
+		this.available = false;
+		this.buy_quantity = 0;
+		this.buy_price = Math.pow(1.5,this.quality);
+		this.sell_price = this.buy_price * 1.3;
 	}
 	Beverage.prototype.getName = function() {
 		var rng = new RNG(this.seed);
