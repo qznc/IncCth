@@ -17,7 +17,6 @@ var Game = Game || {};
 
 	function oneStep() {
 		var now = Date.now();
-		//console.log("step for "+elapsedTime_ms+"ms with counter = "+STATE.counter);
 		var simulation_seconds = STATE.lastStepTime || now;
 		while (simulation_seconds < now) {
 			simulation_seconds += SECONDS_PER_DAY * 1000;
@@ -32,8 +31,9 @@ var Game = Game || {};
 	}
 
 	function simulateOneDay() {
-		//console.log("compute day "+STATE.day);
-		var rng = new RNG(STATE.day);
+		var daySeed = (STATE.day+1) * (STATE.globalSeed+1);
+		console.log("day "+STATE.day+" with seed "+daySeed);
+		var rng = new RNG(daySeed);
 		if (STATE.day % DAYS_PER_MONTH == 0)
 			simulateMonthStart(rng);
 		sellBooze();
@@ -100,7 +100,7 @@ var Game = Game || {};
 
 	function initCachedState() {
 		/* Cached state is static wrt game. It is deterministically computed from the initial RNG seed, so no need to save it. */
-		var rng = new RNG(STATE.startWeekday);
+		var rng = new RNG(STATE.globalSeed);
 		innName = randInnName(rng);
 		innkeeperName = randName(rng);
 		cityName = randName(rng);
@@ -160,7 +160,7 @@ var Game = Game || {};
 		STATE = {
 			"counter": 0,
 			"lastStepTime": now,
-			"startWeekday": now.getDay(),
+			"globalSeed": now.getDay(),
 			"day": 0,
 			"goblins": {
 				"population": 4,
