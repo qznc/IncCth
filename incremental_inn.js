@@ -6,6 +6,7 @@
 	const MAX_NOTIFICATIONS = 6;
 	const DAYS_PER_MONTH = 30;
 	const MONTHS_PER_YEAR = 12;
+	const BEVERAGE_QUALITY_NAME = "disgusting,crappy,common,decent,nice,tasty,fine,exceptional,superb,godlike".split(",");
 	var STATE = Object();
 	var innName = "Joe";
 	var innkeeperName = "Joe";
@@ -73,7 +74,7 @@
 
 	function generateBeverages(rng) {
 		for (var i=0; i<BEVERAGE_COUNT; i++) {
-			var b = randBeverageName(rng);
+			var b = new Beverage(rng.nextInt());
 			beverageList.push(b);
 		}
 	}
@@ -190,8 +191,7 @@
 	function randBeverageName(rng) {
 		var origin = randName(rng);
 		var type = ["beer", "wine", "ale", "mead", "liquor", "cider", "whisky", "vodka", "sherry", "port"];
-		var quality = ["crappy", "common", "nice", "tasty", "fine", "superb", "decent"];
-		return rng.choice(quality) +" "+ capitalizeFirst(rng.choice(type)) + " from " + origin;
+		return capitalizeFirst(rng.choice(type)) + " from " + origin;
 	}
 
 	function capitalizeFirst(name) {
@@ -237,8 +237,19 @@
 		return array[this.nextRange(0, array.length)];
 	}
 
+	function Beverage(seed) {
+		this.seed = seed;
+		var rng = new RNG(seed);
+		this.quality = rng.nextRange(0,5) | 0;
+	}
+	Beverage.prototype.getName = function() {
+		var rng = new RNG(this.seed);
+		var name = randBeverageName(rng);
+		return BEVERAGE_QUALITY_NAME[this.quality] +" "+ name;
+	}
+
 	var dummy_rng = new RNG(Date.now());
 	startGame();
-	notify("In the "+innName+" the innkeeper "+innkeeperName+" sells "+beverageList[0]);
+	notify("In the "+innName+" the innkeeper "+innkeeperName+" sells "+beverageList[0].getName());
 
 })();
