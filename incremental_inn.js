@@ -5,6 +5,7 @@ var Game = Game || {};
 	const ADD_PER_SECOND = 3;
 	const SECONDS_PER_DAY = 2.78;
 	const BEVERAGE_COUNT = 11;
+	const INITIAL_BEVERAGE_COUNT = 2;
 	const MAX_NOTIFICATIONS = 6;
 	const DAYS_PER_MONTH = 30;
 	const MONTHS_PER_YEAR = 12;
@@ -32,7 +33,6 @@ var Game = Game || {};
 
 	function simulateOneDay() {
 		var daySeed = STATE.previousDaySeed;
-		console.log("day "+STATE.day+" with seed "+daySeed);
 		var rng = new RNG(daySeed);
 		STATE.previousDaySeed = rng.nextInt();
 		if (STATE.day % DAYS_PER_MONTH == 0)
@@ -107,19 +107,16 @@ var Game = Game || {};
 		cityName = randName(rng);
 		var h1 = document.getElementById("inntitle");
 		h1.innerHTML = 'The <span class="inn">'+innName+'</span> in <span class="city">'+cityName+'</span>';
-		generateBeverages(rng);
 	}
 
 	function generateBeverages(rng) {
-		for (var i=0; i<BEVERAGE_COUNT; i++) {
-			var b = new Beverage(rng.nextInt());
-			beverageList.push(b);
+		for (var i=0; i<INITIAL_BEVERAGE_COUNT; i++) {
+			var b = createBooze(rng.nextInt());
+			STATE.inn.beverages.push(b);
 		}
 		/* set initially used stuff */
-		beverageList[0].quality = 1;
-		beverageList[0].available = true;
-		beverageList[0].buy_quantity = 2;
-		beverageList[1].available = true;
+		STATE.inn.beverages[0].quality = 1;
+		STATE.inn.beverages[0].buy_quantity = 2;
 		refillAcquisitionTab();
 	}
 
@@ -144,11 +141,11 @@ var Game = Game || {};
 		addElementWithText(tr, "th", "Sell");
 		tab.appendChild(tr);
 		/* add available beverages */
-		for(var i = 0; i<beverageList.length; i++) {
-			var bev = beverageList[i];
-			if (!bev.available) continue;
+		var bevs = STATE.inn.beverages;
+		for(var i = 0; i<bevs.length; i++) {
+			var bev = bevs[i];
 			tr = document.createElement("tr");
-			addElementWithText(tr, "td", capitalizeFirst(bev.getName()));
+			addElementWithText(tr, "td", capitalizeFirst(getBoozeName(bev)));
 			addElementWithText(tr, "td", bev.buy_price.toFixed(2));
 			addElementWithText(tr, "td", bev.buy_quantity | 0);
 			addElementWithText(tr, "td", bev.sell_price.toFixed(2));
@@ -179,6 +176,8 @@ var Game = Game || {};
 				"beverages": [],
 			}
 		};
+		var rng = new RNG(globalSeed);
+		generateBeverages(rng);
 	}
 
 	function notify(msg) {
@@ -329,19 +328,23 @@ var Game = Game || {};
 		return array[this.nextRange(0, array.length)];
 	}
 
-	function Beverage(seed) {
-		this.seed = seed;
+	function createBooze(seed) {
 		var rng = new RNG(seed);
-		this.quality = rng.nextRange(0,BEVERAGE_QUALITY_NAME.length) | 0;
-		this.available = false;
-		this.buy_quantity = 0;
-		this.buy_price = Math.pow(1.5,this.quality);
-		this.sell_price = this.buy_price * 1.3;
+		var quality = rng.nextRange(0,BEVERAGE_QUALITY_NAME.length) | 0;
+		var buy_price = Math.pow(1.5,quality);
+		return {
+			"seed": seed,
+			"quality": quality,
+			"buy_quantity": 0,
+			"buy_price": buy_price,
+			"sell_price": buy_price * 1.3,
+		};
 	}
-	Beverage.prototype.getName = function() {
-		var rng = new RNG(this.seed);
+
+	function getBoozeName(booze) {
+		var rng = new RNG(booze.seed);
 		var name = randBeverageName(rng);
-		return BEVERAGE_QUALITY_NAME[this.quality] +" "+ name;
+		return BEVERAGE_QUALITY_NAME[booze.quality] +" "+ name;
 	}
 
 	function createHero(seed) {
@@ -365,5 +368,6 @@ var Game = Game || {};
 	Game.reset = resetState;
 
 	startGame();
-	notify("In the "+innName+" the innkeeper "+innkeeperName+" sells "+beverageList[0].getName());
+	var main_bev = getBoozeName(STATE.inn.beverages[0]);
+	notify("In the "+innName+" the innkeeper "+innkeeperName+" sells "+main_bev+".");
 })();
