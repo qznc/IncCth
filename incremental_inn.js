@@ -52,6 +52,7 @@ var Game = Game || {};
 		cityGrowth();
 		heroMoves(rng);
 		trimNotifications();
+		updateSidebar();
 		STATE.day += 1;
 	}
 
@@ -73,6 +74,7 @@ var Game = Game || {};
 	}
 
 	function sellBooze() {
+		/* sell to city residents */
 		var cityBudget = STATE.city.gold * 0.2;
 		var transferedGold = 0;
 		var count = STATE.inn.beverages.length;
@@ -87,6 +89,19 @@ var Game = Game || {};
 		notify("Sold booze for "+transferedGold+".");
 		STATE.city.gold -= transferedGold;
 		STATE.inn.gold += transferedGold;
+		/* sell to heros */
+		var count = STATE.city.heroes.length;
+		for (var i=0; i < count; i++) {
+			var hero = STATE.city.heroes[i];
+			// TODO
+		}
+	}
+
+	function updateSidebar() {
+		document.getElementById("stat-worldmoney").innerHTML = STATE.world.gold.toFixed(2);
+		document.getElementById("stat-citymoney").innerHTML = STATE.city.gold.toFixed(2);
+		document.getElementById("stat-innmoney").innerHTML = STATE.inn.gold.toFixed(2);
+		document.getElementById("stat-woodmoney").innerHTML = STATE.goblins.gold.toFixed(2);
 	}
 
 	function monsterGrowth() { }
@@ -219,7 +234,7 @@ var Game = Game || {};
 			},
 			"inn": {
 				"beverages": [],
-				"gold": 100,
+				"gold": 1000,
 			},
 			"world": {
 				"gold": 100,
