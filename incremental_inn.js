@@ -47,25 +47,35 @@ var Game = Game || {};
 
 	function simulateMonthStart(rng) {
 		notify("Start of month "+getMonth()+" in year "+getYear());
+		buyBooze();
+	}
+
+	function buyBooze() {
+		var count = STATE.inn.beverages.length;
+		for (var i=0; i < count; i++) {
+			var bev = STATE.inn.beverages[i];
+			var amount = Math.min(bev.buy_quantity, Math.floor(STATE.inn.gold / bev.buy_price));
+			var price = amount * bev.buy_price;
+			STATE.inn.gold -= price;
+			bev.stored_quantity += amount;
+		}
 	}
 
 	function sellBooze() {
 		var cityBudget = STATE.city.gold * 0.2;
-		console.log("cityBudget: "+cityBudget);
 		var transferedGold = 0;
 		var count = STATE.inn.beverages.length;
 		for (var i=0; i < count; i++) {
 			var bev = STATE.inn.beverages[i];
 			var amount = Math.floor(cityBudget / bev.sell_price);
-			console.log("sell up to "+amount+" or "+bev.stored_quantity);
 			var portions = Math.min(bev.stored_quantity, amount);
-			console.log("bev "+i+": "+portions+" on day "+STATE.day);
 			bev.stored_quantity -= portions;
 			transferedGold += portions * bev.sell_price;
 			cityBudget -= transferedGold;
 		}
-		console.log("Sold booze for "+transferedGold+".");
 		notify("Sold booze for "+transferedGold+".");
+		STATE.city.gold -= transferedGold;
+		STATE.inn.gold += transferedGold;
 	}
 
 	function monsterGrowth() { }
@@ -135,7 +145,8 @@ var Game = Game || {};
 		}
 		/* set initially used stuff */
 		STATE.inn.beverages[0].quality = 1;
-		STATE.inn.beverages[0].buy_quantity = 2;
+		STATE.inn.beverages[0].buy_quantity = 200;
+		STATE.inn.beverages[0].stored_quantity = 200;
 		refillAcquisitionTab();
 	}
 
@@ -158,6 +169,7 @@ var Game = Game || {};
 		addElementWithText(tr, "th", "Buy");
 		addElementWithText(tr, "th", "Quantity");
 		addElementWithText(tr, "th", "Sell");
+		addElementWithText(tr, "th", "Stored");
 		tab.appendChild(tr);
 		/* add available beverages */
 		var bevs = STATE.inn.beverages;
@@ -168,6 +180,7 @@ var Game = Game || {};
 			addElementWithText(tr, "td", bev.buy_price.toFixed(2));
 			addElementWithText(tr, "td", bev.buy_quantity | 0);
 			addElementWithText(tr, "td", bev.sell_price.toFixed(2));
+			addElementWithText(tr, "td", bev.stored_quantity | 0);
 			tab.appendChild(tr);
 		}
 	}
