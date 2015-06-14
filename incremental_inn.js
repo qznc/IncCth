@@ -49,7 +49,25 @@ var Game = Game || {};
 		notify("Start of month "+getMonth()+" in year "+getYear());
 	}
 
-	function sellBooze() { }
+	function sellBooze() {
+		var cityBudget = STATE.city.gold * 0.2;
+		console.log("cityBudget: "+cityBudget);
+		var transferedGold = 0;
+		var count = STATE.inn.beverages.length;
+		for (var i=0; i < count; i++) {
+			var bev = STATE.inn.beverages[i];
+			var amount = Math.floor(cityBudget / bev.sell_price);
+			console.log("sell up to "+amount+" or "+bev.stored_quantity);
+			var portions = Math.min(bev.stored_quantity, amount);
+			console.log("bev "+i+": "+portions+" on day "+STATE.day);
+			bev.stored_quantity -= portions;
+			transferedGold += portions * bev.sell_price;
+			cityBudget -= transferedGold;
+		}
+		console.log("Sold booze for "+transferedGold+".");
+		notify("Sold booze for "+transferedGold+".");
+	}
+
 	function monsterGrowth() { }
 	function cityGrowth() { }
 
@@ -168,13 +186,16 @@ var Game = Game || {};
 				"population": 4,
 				"level": 1,
 				"heroes": [],
+				"gold": 100,
 			},
 			"city": {
 				"population": 14,
 				"heroes": [],
+				"gold": 100,
 			},
 			"inn": {
 				"beverages": [],
+				"gold": 100,
 			}
 		};
 		var rng = new RNG(globalSeed);
@@ -337,6 +358,7 @@ var Game = Game || {};
 			"seed": seed,
 			"quality": quality,
 			"buy_quantity": 0,
+			"stored_quantity": 0,
 			"buy_price": buy_price,
 			"sell_price": buy_price * 1.3,
 		};
