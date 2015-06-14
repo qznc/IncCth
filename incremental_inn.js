@@ -1,6 +1,16 @@
 var Game = Game || {};
 
 (function() {
+	/* MONEY FLOW
+ * world -> hero on creation
+ * hero -> inn for booze (and rooming?)
+ * inn -> world for beverages
+ * inn -> city via taxes
+ * hero -> city for equipment
+ * hero -> goblins on death
+ * goblins -> hero on death
+ */
+
 	const ID_GAMESTATE = "GAMESTATE";
 	const ADD_PER_SECOND = 3;
 	const SECONDS_PER_DAY = 2.78;
@@ -57,6 +67,7 @@ var Game = Game || {};
 			var amount = Math.min(bev.buy_quantity, Math.floor(STATE.inn.gold / bev.buy_price));
 			var price = amount * bev.buy_price;
 			STATE.inn.gold -= price;
+			STATE.world.gold += price;
 			bev.stored_quantity += amount;
 		}
 	}
@@ -208,6 +219,9 @@ var Game = Game || {};
 			},
 			"inn": {
 				"beverages": [],
+				"gold": 100,
+			},
+			"world": {
 				"gold": 100,
 			}
 		};
@@ -385,9 +399,11 @@ var Game = Game || {};
 
 	function createHero(seed) {
 		var rng = new RNG(seed);
+		var gold = STATE.world.gold * 0.5;
+		STATE.world.gold -= gold;
 		return {
 			"seed": seed,
-			"gold": rng.nextRange(10,100),
+			"gold": gold,
 			"level": rng.nextRange(1,3),
 		};
 	}
