@@ -20,6 +20,7 @@ var Game = Game || {};
 	const DAYS_PER_MONTH = 30;
 	const MONTHS_PER_YEAR = 12;
 	const BEVERAGE_QUALITY_NAME = "disgusting,crappy,common,decent,nice,tasty,fine,exceptional,superb,godlike".split(",");
+	const MAX_DAYS_PER_STEP = 100;
 	var STATE = Object();
 	var innName = "Joe";
 	var innkeeperName = "Joe";
@@ -29,6 +30,12 @@ var Game = Game || {};
 	function oneStep() {
 		var now = Date.now();
 		var simulation_seconds = STATE.lastStepTime || now;
+		var days = (now - simulation_seconds) / (SECONDS_PER_DAY * 1000)
+		if (days > MAX_DAYS_PER_STEP) {
+			console.log("Too much backlog days: "+days+". Just continue now.");
+			STATE.lastStepTime = now;
+			simulation_seconds = now;
+		}
 		while (simulation_seconds < now) {
 			simulation_seconds += SECONDS_PER_DAY * 1000;
 			simulateOneDay();
@@ -86,15 +93,26 @@ var Game = Game || {};
 			transferedGold += portions * bev.sell_price;
 			cityBudget -= transferedGold;
 		}
-		notify("Sold booze for "+transferedGold+".");
 		STATE.city.gold -= transferedGold;
 		STATE.inn.gold += transferedGold;
 		/* sell to heros */
 		var count = STATE.city.heroes.length;
 		for (var i=0; i < count; i++) {
 			var hero = STATE.city.heroes[i];
-			// TODO
+			var bev = getHerosBooze(hero,STATE.inn.beverages);
+			//console.log("Drinking booze: "+getHeroShortName(hero));
+			while (true) {
+				if (bev.stored_quantity <= 0) break;
+				if (hero.gold < bev.sell_price) break;
+				hero.gold -= bev.sell_price;
+				STATE.inn.gold += bev.sell_price;
+				transferedGold += bev.sell_price;
+				bev.stored_quantity -= 1;
+				console.log("sold "+getBoozeName(bev)+" to "+getHeroShortName(hero));
+			}
 		}
+		if (transferedGold > 0)
+			notify("Sold booze for "+transferedGold.toFixed(2)+".");
 	}
 
 	function updateSidebar() {
@@ -114,7 +132,7 @@ var Game = Game || {};
 			if (rng.nextRange(0,30) < 3) { /* hero returns to the city */
 				var hero = STATE.goblins.heroes[i];
 				STATE.goblins.heroes.splice(i,1);
-				notify(""+getHeroShortName(hero.seed)+" returns from an adventure.");
+				//notify(""+getHeroShortName(hero)+" returns from an adventure.");
 				returning.push(hero);
 			}
 		}
@@ -122,14 +140,14 @@ var Game = Game || {};
 			if (rng.nextRange(0,10) < 5) { /* hero leaves the city */
 				var hero = STATE.city.heroes[i];
 				STATE.city.heroes.splice(i,1);
-				notify(""+getHeroName(hero.seed)+" goes on adventure.");
+				//notify(""+getHeroName(hero)+" goes on adventure.");
 				leaving.push(hero);
 			}
 		}
 		if (rng.nextRange(0,20) < 2) { /* new hero arrives */
 			var hero = createHero(rng.nextInt());
 			STATE.city.heroes.push(hero);
-			notify("New arrival: "+getHeroName(hero.seed));
+			notify("New arrival: "+getHeroName(hero));
 		}
 		/* actually add heroes to lists */
 		for (var i = 0; i < returning.length; i++) {
@@ -170,9 +188,13 @@ var Game = Game || {};
 			STATE.inn.beverages.push(b);
 		}
 		/* set initially used stuff */
-		STATE.inn.beverages[0].quality = 1;
-		STATE.inn.beverages[0].buy_quantity = 200;
-		STATE.inn.beverages[0].stored_quantity = 200;
+		var bev = STATE.inn.beverages[0];
+		bev.quality = 1;
+		bev.buy_quantity = 200;
+		bev.stored_quantity = 200;
+		while (bev.buy_price > 7) {
+			bev.buy_price /= 2.1;
+		}
 		refillAcquisitionTab();
 	}
 
@@ -225,19 +247,19 @@ var Game = Game || {};
 				"population": 4,
 				"level": 1,
 				"heroes": [],
-				"gold": 100,
+				"gold": 1000,
 			},
 			"city": {
 				"population": 14,
 				"heroes": [],
-				"gold": 100,
+				"gold": 1000,
 			},
 			"inn": {
 				"beverages": [],
 				"gold": 1000,
 			},
 			"world": {
-				"gold": 100,
+				"gold": 1000,
 			}
 		};
 		var rng = new RNG(globalSeed);
@@ -423,17 +445,22 @@ var Game = Game || {};
 		};
 	}
 
-	function getHeroName(seed) {
-		var rng = new RNG(seed);
+	function getHeroName(hero) {
+		var rng = new RNG(hero.seed);
 		var name = randName(rng);
 		var race = randRace(rng);
 		var heroclass = randHeroClass(rng);
 		return name +" ("+ race +" "+ heroclass +")";
 	}
 
-	function getHeroShortName(seed) {
-		var rng = new RNG(seed);
+	function getHeroShortName(hero) {
+		var rng = new RNG(hero.seed);
 		return randName(rng);
+	}
+
+	function getHerosBooze(hero,beverages) {
+		var rng = new RNG(hero.seed);
+		return rng.choice(beverages);
 	}
 
 	/* expose public API */
