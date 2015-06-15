@@ -108,7 +108,7 @@ var Game = Game || {};
 				STATE.inn.gold += bev.sell_price;
 				transferedGold += bev.sell_price;
 				bev.stored_quantity -= 1;
-				console.log("sold "+getBoozeName(bev)+" to "+getHeroShortName(hero));
+				console.log("sold "+getBoozeName(bev)+" to "+getHeroShortName(hero)+". Still in store: "+bev.stored_quantity);
 			}
 		}
 		if (transferedGold > 0)
@@ -120,6 +120,10 @@ var Game = Game || {};
 		document.getElementById("stat-citymoney").innerHTML = STATE.city.gold.toFixed(2);
 		document.getElementById("stat-innmoney").innerHTML = STATE.inn.gold.toFixed(2);
 		document.getElementById("stat-woodmoney").innerHTML = STATE.goblins.gold.toFixed(2);
+		document.getElementById("stat-woodheroes").innerHTML =
+			STATE.goblins.heroes.map(getHeroShortName).join(", ");
+		document.getElementById("stat-cityheroes").innerHTML =
+			STATE.city.heroes.map(getHeroShortName).join(", ");
 	}
 
 	function monsterGrowth() { }
@@ -129,11 +133,21 @@ var Game = Game || {};
 		var returning = [];
 		var leaving = [];
 		for (var i = 0; i < STATE.goblins.heroes.length; i++) {
-			if (rng.nextRange(0,30) < 3) { /* hero returns to the city */
-				var hero = STATE.goblins.heroes[i];
+			var hero = STATE.goblins.heroes[i];
+			if (rng.nextRange(0,70) < 3) { /* hero dies */
+				STATE.goblins.heroes.splice(i,1);
+				STATE.goblins.gold += hero.gold;
+				//console.log("Death: "+getHeroShortName(hero));
+			} else if (rng.nextRange(0,30) < 3) { /* hero returns to the city */
 				STATE.goblins.heroes.splice(i,1);
 				//notify(""+getHeroShortName(hero)+" returns from an adventure.");
+				//console.log(""+getHeroShortName(hero)+" returns from an adventure.");
 				returning.push(hero);
+			} else { /* hero gets some loot */
+				var transferedMoney = STATE.goblins.gold * 0.1;
+				STATE.goblins.gold -= transferedMoney;
+				hero.gold += transferedMoney;
+				//console.log(""+getHeroShortName(hero)+" takes some loot: "+transferedMoney.toFixed(2)+" and now has "+hero.gold.toFixed(2));
 			}
 		}
 		for (var i = 0; i < STATE.city.heroes.length; i++) {
@@ -141,6 +155,7 @@ var Game = Game || {};
 				var hero = STATE.city.heroes[i];
 				STATE.city.heroes.splice(i,1);
 				//notify(""+getHeroName(hero)+" goes on adventure.");
+				//console.log(""+getHeroName(hero)+" goes on adventure.");
 				leaving.push(hero);
 			}
 		}
