@@ -60,7 +60,9 @@ var Game = Game || {};
 		heroMoves(rng);
 		trimNotifications();
 		updateSidebar();
+		refillAcquisitionTab();
 		STATE.day += 1;
+		STATE.world.gold += 1; /* increase money total */
 	}
 
 	function simulateMonthStart(rng) {
@@ -82,7 +84,7 @@ var Game = Game || {};
 
 	function sellBooze() {
 		/* sell to city residents */
-		var cityBudget = STATE.city.gold * 0.2;
+		var cityBudget = STATE.city.gold * 0.1;
 		var transferedGold = 0;
 		var count = STATE.inn.beverages.length;
 		for (var i=0; i < count; i++) {
@@ -134,7 +136,7 @@ var Game = Game || {};
 		var leaving = [];
 		for (var i = 0; i < STATE.goblins.heroes.length; i++) {
 			var hero = STATE.goblins.heroes[i];
-			if (rng.nextRange(0,70) < 3) { /* hero dies */
+			if (rng.nextRange(0,60) < 3) { /* hero dies */
 				STATE.goblins.heroes.splice(i,1);
 				STATE.goblins.gold += hero.gold;
 				//console.log("Death: "+getHeroShortName(hero));
@@ -151,12 +153,16 @@ var Game = Game || {};
 			}
 		}
 		for (var i = 0; i < STATE.city.heroes.length; i++) {
+			var hero = STATE.city.heroes[i];
 			if (rng.nextRange(0,10) < 5) { /* hero leaves the city */
-				var hero = STATE.city.heroes[i];
 				STATE.city.heroes.splice(i,1);
 				//notify(""+getHeroName(hero)+" goes on adventure.");
 				//console.log(""+getHeroName(hero)+" goes on adventure.");
 				leaving.push(hero);
+			} else { /* hero pays to the city */
+				var transferedMoney = Math.min(hero.gold, 10);
+				hero.gold -= transferedMoney;
+				STATE.city.gold += transferedMoney;
 			}
 		}
 		if (rng.nextRange(0,20) < 2) { /* new hero arrives */
@@ -205,11 +211,12 @@ var Game = Game || {};
 		/* set initially used stuff */
 		var bev = STATE.inn.beverages[0];
 		bev.quality = 1;
-		bev.buy_quantity = 200;
+		bev.buy_quantity = 30;
 		bev.stored_quantity = 200;
 		while (bev.buy_price > 7) {
 			bev.buy_price /= 2.1;
 		}
+		bev.sell_price = bev.buy_price * 1.3;
 		refillAcquisitionTab();
 	}
 
