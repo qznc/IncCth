@@ -21,6 +21,7 @@ var Game = Game || {};
 	const MONTHS_PER_YEAR = 12;
 	const BEVERAGE_QUALITY_NAME = "disgusting,crappy,common,decent,nice,tasty,fine,exceptional,superb,godlike".split(",");
 	const MAX_DAYS_PER_STEP = 100;
+	const MAX_BOOZE_PER_HERO = 2;
 	var STATE = Object();
 	var innName = "Joe";
 	var innkeeperName = "Joe";
@@ -103,7 +104,7 @@ var Game = Game || {};
 			var hero = STATE.city.heroes[i];
 			var bev = getHerosBooze(hero,STATE.inn.beverages);
 			//console.log("Drinking booze: "+getHeroShortName(hero));
-			while (true) {
+			for (var j=0; j < MAX_BOOZE_PER_HERO; j++) {
 				if (bev.stored_quantity <= 0) break;
 				if (hero.gold < bev.sell_price) break;
 				hero.gold -= bev.sell_price;
