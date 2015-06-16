@@ -15,12 +15,13 @@ html {
 }
 
 a,
-body { color: #d70; }
+body { color: #fc6; }
 
+#sidebar table,
 #game .item,
 #game section,
-#game section h2 { background-color: #410; }
-#game section:target h2 { background-color: #620; }
+#game section h2 { background-color: #212; }
+#game section:target h2 { background-color: #423; }
 
 /* FONTS */
 body { font-size: 100%;
