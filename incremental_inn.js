@@ -12,6 +12,7 @@ var Game = Game || {};
  */
 
 	const ID_GAMESTATE = "GAMESTATE";
+	const GAME_VERSION = 1;
 	const ADD_PER_SECOND = 3;
 	const SECONDS_PER_DAY = 2.78;
 	const BEVERAGE_COUNT = 11;
@@ -111,7 +112,7 @@ var Game = Game || {};
 				STATE.inn.gold += bev.sell_price;
 				transferedGold += bev.sell_price;
 				bev.stored_quantity -= 1;
-				console.log("sold "+getBoozeName(bev)+" to "+getHeroShortName(hero)+". Still in store: "+bev.stored_quantity);
+				//console.log("sold "+getBoozeName(bev)+" to "+getHeroShortName(hero)+". Still in store: "+bev.stored_quantity);
 			}
 		}
 		if (transferedGold > 0)
@@ -279,7 +280,9 @@ var Game = Game || {};
 
 	function resetState() {
 		var now = new Date();
-		var globalSeed = now.getDay() + 11;
+		var globalSeed = now.getDay() * 1000;
+		assert (globalSeed > GAME_VERSION, globalSeed+" <= "+GAME_VERSION);
+		globalSeed += GAME_VERSION;
 		console.log("globalSeed: "+globalSeed);
 		STATE = {
 			"counter": 0,
