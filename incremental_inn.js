@@ -313,6 +313,28 @@ var Game = Game || {};
 		generateBeverages(rng);
 	}
 
+	var CRAZY_DIACRITICS = [ '\u030d', '\u0321', '\u033c', '\u0344', '\u0353', '\u0361' ];
+	function insaneText(text, insanity, rng) {
+		var len = text.length;
+		var count = len * insanity / 2;
+		if (len < 1) return text;
+		for (var i=0; i<count; i++) {
+			var index = rng.nextRange(1,len);
+			var insert = rng.choice(CRAZY_DIACRITICS);
+			text = [text.slice(0,index),insert,text.slice(index)].join("");
+		}
+		if (insanity > 0.1) { text = text.replace(/t/g, "ƚ"); }
+		if (insanity > 0.2) { text = text.toLowerCase(); }
+		if (insanity > 0.3) { text = text.replace(/l/g, "I"); }
+		if (insanity > 0.4) { text = text.replace(/r/g, "ɿ"); }
+		if (insanity > 0.5) { text = text.replace(/d/g, "₫"); }
+		if (insanity > 0.6) { text = text.replace(/s/g, "ƨ"); }
+		if (insanity > 0.7) { text = text.replace(/i/g, "!"); }
+		if (insanity > 0.8) { text = text.replace(/e/g, "ɘ"); }
+		if (insanity > 0.9) { text = text.replace(/a/g, "ɐ"); }
+		return text;
+	}
+
 	function notify(msg) {
 		var timeline = document.getElementById("timeline");
 		var item = document.createElement("div");
