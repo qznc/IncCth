@@ -6,58 +6,32 @@
 	<link rel="stylesheet" type="text/css" href="incremental_inn.css" />
 </head>
 <body>
-	<div id="board">
-		Counter is at <span id="counter"></span> now.
-	</div>
-	<h1 id="inntitle">A Random Inn</h1>
-	<div id="game">
-		<section id="overview">
-			<h2><a href="#overview">Overview</a></h2>
-			<div id="timeline">
-				<div class="item">
-					In the Lost Swine the innkeeper Gowise sells common Ale from Riaglicor.
-				</div>
-				<div class="item">
-					In the Drinking Pony the innkeeper Nalash sells common Wine from Sarorfro.
-				</div>
-				<div class="item">
-					In the Prancing Deer the innkeeper Feitu sells fine Beer from Saugotharan.
-				</div>
+	<h1>Cthulhu Calls</h1>
+	<div id="actions">
+		<div id="always_actions">
+			<ul>
+				<li><button id="readBooks">Read books</button></li>
+				<li><button id="makePause">Take some time off</button></li>
+			</ul>
+		</div>
+		<div id="notifications">
+			<div class="notification">
+				You sit in the library.
 			</div>
-		</section>
-		<section id="acq">
-			<h2><a href="#acq">Acquisition</a></h2>
-			<div class="tabcontent">
-			<p>What and how much to buy each month?</p>
-			<table id="beverageList"></table>
-			</div>
-		</section>
-		<section id="options">
-			<h2><a href="#options">Options</a></h2>
+		</div>
+		<div id="debug">
 			<table>
-				<tr><td><a href="javascript:Game.reset()">Reset</a></td>
-					<td>everything to initial state</td></tr>
+				<tr><td>Knowledge</td><td id="stat-knowledge"></td></tr>
+				<tr><td>Sanity</td><td id="stat-sanity"></td></tr>
 			</table>
-		</section>
-	</div>
-	<div id="sidebar">
-		<table>
-			<tr><td>World money</td><td id="stat-worldmoney"></td></tr>
-			<tr><td>City money</td><td id="stat-citymoney"></td></tr>
-			<tr><td>Inn money</td><td id="stat-innmoney"></td></tr>
-			<tr><td>Woods money</td><td id="stat-woodmoney"></td></tr>
-			<tr><td>City Heroes</td><td id="stat-cityheroes"></td></tr>
-			<tr><td>Wood Heroes</td><td id="stat-woodheroes"></td></tr>
-		</table>
+			<button id="reset">Reset Game</button>
+		</div>
+		<div class="clear"></div>
 	</div>
 	<footer>
 	<p>
-	A game by <a href="mailto:qznc@web.de">qznc</a>, though the
-	<a href="http://mintyfreshmangos.deviantart.com/art/DeaApp-Frantasia-539766195">background image source</a>
-	is elsewhere.
+	A game by <a href="mailto:qznc@web.de">qznc</a>
 	</p>
 	</footer>
-	<div id="backstore" style="visibility:none;">
-	</div>
 	<script type="text/javascript" src="incremental_inn.js"></script>
 </body>
