@@ -50,7 +50,10 @@ table a { text-decoration: underline; }
 footer { clear: both; }
 
 /* EFFECTS */
-#timeline .item {
-	transition: opacity 1s;
-	-webkit-transition: opacity 1s;
+.notification {
+	transition: opacity 1s, height 1s;
+	-webkit-transition: opacity 1s, height 1s;
+}
+.notification.hidden {
+	opacity: 0;
 }

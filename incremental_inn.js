@@ -35,20 +35,30 @@ var Game = Game || {};
 
 	function readBooks(event) {
 		console.log("readBooks "+event);
-		STATE.knowledge += 7;
-		incSanityBy(-0.01)
+		STATE.knowledge += 13 * STATE.sanity;
+		incSanityBy(-0.1 * STATE.sanity);
+		notify("You read about some cult in China.");
 		updateUI();
 	}
 
-	function makePause(event) {
-		console.log("makePause "+event);
-		STATE.knowledge -= 1;
-		incSanityBy(0.01)
+	function getSleep(event) {
+		console.log("getSleep "+event);
+		var rng = new RNG(STATE.currentSeed);
+		if (rng.nextFloat() > STATE.sanity) {
+			incSanityBy(-0.02); // bad dreams
+			notify("Your dreams are haunted by monstrous inter-dimensional beasts.");
+		} else {
+			incSanityBy(0.02); // rest
+			notify("After some sleep your head feels more clear.");
+		}
 		updateUI();
 	}
 
 	function updateUI() {
-		var rng = new RNG(1337);
+		var rng = new RNG(STATE.currentSeed);
+		STATE.currentSeed = rng.nextInt();
+
+		var stable_rng = new RNG(STATE.globalSeed);
 		function updateText(elemid,html) {
 			document.getElementById(elemid).innerHTML = html;
 		}
@@ -64,7 +74,7 @@ var Game = Game || {};
 			} else {
 				text = puretext;
 			}
-			b.innerHTML = insaneText(text, 1.0 - STATE.sanity, rng);
+			b.innerHTML = insaneText(text, 1.0 - STATE.sanity, stable_rng);
 		}
 	}
 
@@ -77,6 +87,7 @@ var Game = Game || {};
 			STATE = s;
 		}
 		setInterval(saveGame, 30*1000);
+		setInterval(trimNotifications, 3*1000);
 		connectButtons();
 		updateUI();
 	}
@@ -86,7 +97,7 @@ var Game = Game || {};
 			document.getElementById(elemid).onclick = func;
 		}
 		connect("readBooks", readBooks);
-		connect("makePause", makePause);
+		connect("getSleep", getSleep);
 		connect("reset", resetState);
 	}
 
@@ -110,7 +121,7 @@ var Game = Game || {};
 
 	function resetState() {
 		var now = new Date();
-		var globalSeed = now.getDay() * 1000;
+		var globalSeed = (1+now.getDay()) * 1000;
 		assert (globalSeed > GAME_VERSION, globalSeed+" <= "+GAME_VERSION);
 		globalSeed += GAME_VERSION;
 		console.log("globalSeed: "+globalSeed);
@@ -119,7 +130,13 @@ var Game = Game || {};
 			"sanity": 1.0,
 			"lastStepTime": now,
 			"globalSeed": globalSeed,
+			"currentSeed": globalSeed,
 		};
+		/* remove all notifications */
+		var notes = document.getElementById("notifications");
+		while (notes.firstChild) {
+			notes.removeChild(notes.firstChild);
+		}
 		updateUI();
 	}
 
@@ -158,18 +175,18 @@ var Game = Game || {};
 		setTimeout(function() {
 			item.className = "item";
 		}, 0);
+		trimNotifications();
 	}
 
 	function trimNotifications() {
-		var timeline = document.getElementById("timeline");
-		if (timeline.childNodes.length > MAX_NOTIFICATIONS) {
-			var item = timeline.childNodes[timeline.childNodes.length - 1];
-			if (!item) return;
-			item.className = "item hidden";
+		var notes = document.getElementById("notifications");
+		if (window.innerHeight * 0.8 < notes.offsetHeight) {
+			var item = notes.children[0];
+			item.className = "notification hidden";
 			setTimeout(function() {
-				if (item.parentNode != timeline)
+				if (item.parentNode != notes)
 					return; /* things might have changed already */
-				timeline.removeChild(item);
+				notes.removeChild(item);
 			}, 1000);
 		}
 	}
