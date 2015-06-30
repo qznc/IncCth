@@ -61,6 +61,7 @@ var Game = Game || {};
 		var rng = new RNG(STATE.currentSeed);
 		if (rng.nextFloat() > STATE.sanity) {
 			var item = popKnowledgeItem();
+			STATE.knowledge += 4 * STATE.sanity;
 			incSanityBy(-0.02); // bad dreams
 			notify("Your dreams are haunted by "+item.name+".");
 		} else {
@@ -143,7 +144,9 @@ var Game = Game || {};
 		}
 		n("a Devourer in the Mist"                               , 1.0 );
 		n("a Herald of S'glhuo"                                  , 1.0 );
-		n("a Devourer of Stars"                                  , 1.0 );
+		n("the Sea Horror"                                       , 0.91);
+		n("the Widow in the Woods"                               , 0.99);
+		n("a Devourer of Stars"                                  , 0.90);
 		n("a Creator of Nile"                                    , 0.99);
 		n("a Universe's Equilibrium"                             , 0.98);
 		n("the Cold Flame"                                       , 0.98);
@@ -155,7 +158,6 @@ var Game = Game || {};
 		n("the Serpent Goddess"                                  , 0.95);
 		n("the Aeg"                                              , 0.94);
 		n("the Aega"                                             , 0.94);
-		n("the Widow in the Woods"                               , 0.93);
 		n("the Many-Mother"                                      , 0.93);
 		n("the Bringer of Pestilence"                            , 0.92);
 		n("a Master of the Crabs"                                , 0.92);
@@ -199,7 +201,7 @@ var Game = Game || {};
 		n("the Corrupter of Flesh"                               , 0.90);
 		n("a Master of the Temple"                               , 0.90);
 		n("the Twice-Invoked"                                    , 0.90);
-		n("a Eater on the Insane"                                , 0.90);
+		n("an Eater on the Insane"                               , 0.90);
 		n("the Forgotten Old One"                                , 0.90);
 		n("a God of the Black Stone"                             , 0.90);
 		n("the Horror Under Warrendown"                          , 0.80);
@@ -222,7 +224,6 @@ var Game = Game || {};
 		n("a Ziulquag-Manzah"                                    , 0.31);
 		n("Cthulhu's Mate"                                       , 0.21);
 		n("a Xothic Matriarch"                                   , 0.61);
-		n("the Sea Horror"                                       , 0.91);
 		n("the Shining Hunter"                                   , 0.91);
 		n("a Mistress of Darkness"                               , 0.91);
 		n("the Wind Walker"                                      , 0.91);
@@ -433,7 +434,6 @@ var Game = Game || {};
 		var str = JSON.stringify(STATE);
 		window.localStorage.setItem(ID_GAMESTATE, str);
 		console.log("saved: "+str);
-		notify("Saved game on "+(new Date()));
 	}
 
 	function setIfMissing(obj, key, val) {
