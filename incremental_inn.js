@@ -33,18 +33,24 @@ var Game = Game || {};
 		STATE.sanity = x;
 	}
 
-	function readBooks(event) {
+	function popKnowledgeItem() {
 		var rknowl = STATE.readingKnowledge;
+		var filtered = [];
 		for (var i=0; i<rknowl.length; i++) {
 			var item = rknowl[i];
-			console.log(item);
 			if (item.sanity    < STATE.sanity) continue;
 			if (item.knowledge > STATE.knowledge) continue;
-			if (XRNG.nextFloat() > 0.5) continue;
-			STATE.readingKnowledge.splice(i,1);
-			notify("You read about "+item.name+".");
-			break;
+			filtered.push(i);
 		}
+		var index = XRNG.choice(filtered);
+		var item = rknowl[index];
+		STATE.readingKnowledge.splice(index,1);
+		return item;
+	}
+
+	function readBooks(event) {
+		var item = popKnowledgeItem();
+		notify("You read about "+item.name+".");
 		STATE.knowledge += 13 * STATE.sanity;
 		incSanityBy(-0.1 * STATE.sanity);
 		updateUI();
@@ -54,8 +60,9 @@ var Game = Game || {};
 		console.log("getSleep "+event);
 		var rng = new RNG(STATE.currentSeed);
 		if (rng.nextFloat() > STATE.sanity) {
+			var item = popKnowledgeItem();
 			incSanityBy(-0.02); // bad dreams
-			notify("Your dreams are haunted by monstrous inter-dimensional beasts.");
+			notify("Your dreams are haunted by "+item.name+".");
 		} else {
 			incSanityBy(0.02); // rest
 			notify("After some sleep your head feels more clear.");
