@@ -42,7 +42,7 @@ table a { text-decoration: underline; }
 #always_actions { width: 20em; float: left; }
 #debug { width: 10em; }
 
-#always_actions button { margin: 2em 0; float: left; }
+#always_actions button { margin: 2em 1em; float: left; }
 
 #actions li { margin: 1em 0; }
 

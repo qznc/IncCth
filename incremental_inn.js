@@ -39,7 +39,7 @@ var Game = Game || {};
 		for (var i=0; i<rknowl.length; i++) {
 			var item = rknowl[i];
 			if (item.sanity    < STATE.sanity) continue;
-			if (item.knowledge > STATE.knowledge) continue;
+			if (item.knowledge > STATE.safeKnowledge + STATE.knowledge) continue;
 			filtered.push(i);
 		}
 		var index = XRNG.choice(filtered);
@@ -51,7 +51,7 @@ var Game = Game || {};
 	function readBooks(event) {
 		var item = popKnowledgeItem();
 		notify("You read about "+item.name+".");
-		STATE.knowledge += 13 * STATE.sanity;
+		STATE.knowledge += 11 * STATE.sanity;
 		incSanityBy(-0.1 * STATE.sanity);
 		updateUI();
 	}
@@ -71,6 +71,15 @@ var Game = Game || {};
 		updateUI();
 	}
 
+	function writeDown(event) {
+		notify("You write everything down, so somebody else can take over.");
+		STATE.safeKnowledge = STATE.knowledge * STATE.sanity;
+		STATE.knowledge = 0;
+		STATE.sanity = 1.0;
+		notify("You sit in a library.");
+		updateUI();
+	}
+
 	function updateUI() {
 		var rng = new RNG(STATE.currentSeed);
 		STATE.currentSeed = rng.nextInt();
@@ -80,6 +89,7 @@ var Game = Game || {};
 			document.getElementById(elemid).innerHTML = html;
 		}
 		updateText("stat-knowledge", STATE.knowledge | 0);
+		updateText("stat-safeknowledge", STATE.safeKnowledge | 0);
 		updateText("stat-sanity", STATE.sanity.toFixed(2));
 		var buttons = document.getElementsByTagName("button");
 		for (var i=0; i<buttons.length; i++) {
@@ -116,6 +126,11 @@ var Game = Game || {};
 		} else {
 			hideButton("getSleep");
 		}
+		if (STATE.knowledge > 50) {
+			showButton("writeDown");
+		} else {
+			hideButton("writeDown");
+		}
 	}
 
 	function startGame() {
@@ -138,6 +153,7 @@ var Game = Game || {};
 		}
 		connect("readBooks", readBooks);
 		connect("getSleep", getSleep);
+		connect("writeDown", writeDown);
 		connect("reset", resetState);
 	}
 
@@ -445,6 +461,7 @@ var Game = Game || {};
 		console.log("globalSeed: "+globalSeed);
 		STATE = {
 			"knowledge": 0,
+			"safeKnowledge": 0,
 			"sanity": 1.0,
 			"lastStepTime": now,
 			"globalSeed": globalSeed,
