@@ -93,6 +93,29 @@ var Game = Game || {};
 			}
 			b.innerHTML = insaneText(text, 1.0 - STATE.sanity, stable_rng);
 		}
+		updateButtons();
+	}
+
+	function updateButtons() {
+		function showButton(id) {
+			var e = document.getElementById(id);
+			var hp = document.getElementById("always_actions");
+			hp.appendChild(e);
+			e.classList.remove("hidden");
+		}
+		function hideButton(id) {
+			var e = document.getElementById(id);
+			e.classList.add("hidden");
+			setTimeout(function() {
+				var hp = document.getElementById("hiddenParent");
+				hp.appendChild(e);
+			}, 1000);
+		}
+		if (STATE.sanity < 0.7) {
+			showButton("getSleep");
+		} else {
+			hideButton("getSleep");
+		}
 	}
 
 	function startGame() {

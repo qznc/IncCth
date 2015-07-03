@@ -42,6 +42,8 @@ table a { text-decoration: underline; }
 #always_actions { width: 20em; float: left; }
 #debug { width: 10em; }
 
+#always_actions button { margin: 2em 0; float: left; }
+
 #actions li { margin: 1em 0; }
 
 #notifications { min-height: 30em; }
@@ -50,10 +52,13 @@ table a { text-decoration: underline; }
 footer { clear: both; }
 
 /* EFFECTS */
+button,
 .notification {
 	transition: opacity 1s, height 1s;
 	-webkit-transition: opacity 1s, height 1s;
 }
+button.hidden,
 .notification.hidden {
 	opacity: 0;
 }
+#hiddenParent { display: none; }
