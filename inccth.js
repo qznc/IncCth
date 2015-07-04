@@ -105,6 +105,19 @@ var Game = Game || {};
 		updateUI();
 	}
 
+	var DeathKnowledge = [
+		"the gruesome death of <name>",
+		"how <name> was tortured and killed by an asian cult",
+		"the mysterious disappearance of <name>",
+		"how <name> was murdered by an insane dog",
+		"the bloody murder of <name>",
+		"how a suicide murderer killed <name> and herself",
+		"how <name> killed himself with a fork",
+		"how <name> killed himself in the asylum",
+		"how a mysterious illness killed <name>",
+		"how <name> was killed after long torture",
+	];
+
 	function writeDown(event) {
 		var oldName = STATE.charName;
 		notify("You, "+oldName+", write everything down, so somebody else can take over.");
@@ -113,7 +126,8 @@ var Game = Game || {};
 		STATE.sanity = 1.0;
 		STATE.charName = randName();
 		notify("You, "+STATE.charName+", sit in a library.");
-		STATE.readingKnowledge.unshift({'name': "the gruesome death of "+oldName, 'sanity': 0.99, 'knowledge': 1});
+		var msg = XRNG.choice(DeathKnowledge).replace("<name>", STATE.charName);
+		STATE.readingKnowledge.unshift({'name': msg, 'sanity': 0.99, 'knowledge': 1});
 		updateUI();
 	}
 
