@@ -63,7 +63,7 @@ var Game = Game || {};
 		var item = popKnowledgeItem();
 		var prefix = XRNG.choice(YouReadVariants);
 		notify(prefix+item.name+".");
-		STATE.knowledge += 11 * STATE.sanity;
+		STATE.knowledge += 8 * STATE.sanity;
 		incSanityBy(-0.1 * STATE.sanity);
 		updateUI();
 	}
