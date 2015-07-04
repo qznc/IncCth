@@ -181,12 +181,12 @@ var Game = Game || {};
 			resetState();
 		} else { /* load old game */
 			STATE = s;
+			notify("You, "+STATE.charName+", sit in a library.");
 		}
 		setInterval(saveGame, 30*1000);
 		setInterval(trimNotifications, 3*1000);
 		connectButtons();
 		updateUI();
-		notify("You, "+STATE.charName+", sit in a library.");
 	}
 
 	function connectButtons() {
