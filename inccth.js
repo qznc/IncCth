@@ -168,15 +168,23 @@ var Game = Game || {};
 	}
 
 	function updateButtons() {
-		function showButton(id) {
+		function showElem(id) {
 			var e = document.getElementById(id);
-			var hp = document.getElementById("always_actions");
-			hp.appendChild(e);
 			e.classList.remove("hidden");
+			return e;
 		}
-		function hideButton(id) {
+		function hideElem(id) {
 			var e = document.getElementById(id);
 			e.classList.add("hidden");
+			return e;
+		}
+		function showButton(id) {
+			var e = showElem(id);
+			var hp = document.getElementById("always_actions");
+			hp.appendChild(e);
+		}
+		function hideButton(id) {
+			var e = hideElem(id);
 			setTimeout(function() {
 				var hp = document.getElementById("hiddenParent");
 				hp.appendChild(e);
@@ -186,6 +194,11 @@ var Game = Game || {};
 		if (STATE.sanity > 0.95) hideButton("getSleep");
 		if (STATE.knowledge > 50) showButton("writeDown");
 		if (STATE.knowledge < 10) hideButton("writeDown");
+		if (STATE.knowledge > 10) showElem("stat-tr-knowledge");
+		if (STATE.knowledge < 1 && STATE.safeKnowledge < 1) hideElem("stat-tr-knowledge");
+		if (STATE.safeKnowledge > 10) showElem("stat-tr-safeKnowledge");
+		if (STATE.safeKnowledge < 1) hideElem("stat-tr-safeKnowledge");
+		if (DEBUG) showElem("stat-tr-sanity");
 	}
 
 	function startGame() {
