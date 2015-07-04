@@ -72,12 +72,22 @@ var Game = Game || {};
 	}
 
 	function writeDown(event) {
-		notify("You write everything down, so somebody else can take over.");
+		var oldName = STATE.charName;
+		notify("You, "+oldName+", write everything down, so somebody else can take over.");
 		STATE.safeKnowledge = STATE.knowledge * STATE.sanity;
 		STATE.knowledge = 0;
 		STATE.sanity = 1.0;
-		notify("You sit in a library.");
+		STATE.charName = randName();
+		notify("You, "+STATE.charName+", sit in a library.");
+		STATE.readingKnowledge.unshift({'name': "the gruesome death of "+oldName, 'sanity': 0.99, 'knowledge': 1});
 		updateUI();
+	}
+
+	function randName() {
+		var firstNames = "Robert Randolph Herbert Joel Harley Hazel Richard Abraham Eliot Dan Ash Titus John Bran George Edward".split(" ");
+		var surNames = "Carter West Blake Manton Warren Heald Pickman Helsing Cain Williams Ness Crucian Kirowan Morn Challenger".split(" ");
+		console.log(surNames);
+		return XRNG.choice(firstNames) +" "+ XRNG.choice(surNames);
 	}
 
 	function updateUI() {
@@ -178,7 +188,7 @@ var Game = Game || {};
 	function initKnowledge() {
 		var readknowledge = [];
 		var minimum_knowledge = -12;
-		function n(name,sanity,knowl) {
+		function n(name,sanity) {
 			readknowledge.push({'name': name, 'sanity': sanity, 'knowledge': minimum_knowledge++});
 		}
 		n("an entity of living sound", 1.0 );
@@ -466,6 +476,7 @@ var Game = Game || {};
 			"lastStepTime": now,
 			"globalSeed": globalSeed,
 			"currentSeed": globalSeed,
+			"charName": randName(),
 		};
 		initKnowledge();
 		/* remove all notifications */
@@ -561,18 +572,6 @@ var Game = Game || {};
 
 	function capitalizeFirst(name) {
 		return name.charAt(0).toUpperCase() + name.slice(1);
-	}
-
-	function randName(rng) {
-		var syllables = "abi,gail,bel,bra,ham,dair,son,lia,line,dolph,an,ai,dan,leen,ara,gorn,bo,ro,mir,sam,wise,fro,do,pip,in,gan,dalf,sau,ron,gim,li,as,cle,chit,ho,mu,li,do,kro,ne,me,ge,sym,na,la,ne,so,non,su,syst,via,se,ze,la,nip,au,go,bal,nit,dug,be,tu,lan,de,mor,chi,rin,gu,ri,na,tur,urd,chau,rog,gon,goth,mon,gli,vae,tug,val,ko,tu,go,ru,li,cal,ko,morg,ria,sa,ran,vau,gond,cor,tum,pe,non,hho,to,pit,so,ne,riel,sih,po,ki,el,hor,he,nin,zu,sar,ces,ma,ran,deo,li,de,va,he,fei,va,ror,fe,me,can,da,be,ju,sae,nel,phi,en,dor,do,ran,ther,ari,aran,qui,roth,os,tai,nal,war,wor,rad,wa,rald,ash,bu,ren,to,ria".split(",");
-		var name = rng.choice(syllables)
-		/* like add a second syllable */
-		if (rng.nextRange(0,10) < 9)
-			name += rng.choice(syllables);
-		/* maybe add a third syllable */
-		if (rng.nextRange(0,10) < 4)
-			name += rng.choice(syllables);
-		return capitalizeFirst(name);
 	}
 
 	function RNG(seed) {
