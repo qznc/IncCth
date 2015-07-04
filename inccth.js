@@ -160,6 +160,7 @@ var Game = Game || {};
 		var rng = new RNG(STATE.currentSeed);
 		STATE.currentSeed = rng.nextInt();
 
+		completenessCheck();
 		sanityCheck();
 
 		var stable_rng = new RNG(STATE.globalSeed);
@@ -186,6 +187,12 @@ var Game = Game || {};
 			b.innerHTML = insaneText(text, 1.0 - STATE.sanity, stable_rng);
 		}
 		updateButtons();
+	}
+
+	function completenessCheck() {
+		if (STATE.readingKnowledge.length > 0) return;
+		resetState();
+		notify("In an alternate reality, mankind figured out the Great Old Ones and destroyed them. (You won. Game has been reset.)");
 	}
 
 	function sanityCheck() {
