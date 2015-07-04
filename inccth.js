@@ -628,7 +628,6 @@ var Game = Game || {};
 
 	function trimNotifications() {
 		var notes = document.getElementById("notifications");
-		console.log("Check "+(window.innerHeight * 0.7)+" => "+notes.offsetHeight);
 		if (window.innerHeight * 0.7 < notes.offsetHeight) {
 			var item = notes.children[0];
 			item.className = "notification hidden";
@@ -643,12 +642,11 @@ var Game = Game || {};
 	function saveGame() {
 		var str = JSON.stringify(STATE);
 		window.localStorage.setItem(ID_GAMESTATE, str);
-		console.log("saved: "+str);
+		console.log("saved game");
 	}
 
 	function setIfMissing(obj, key, val) {
 		if (key in obj && obj[key] !== undefined && obj[key] !== null) return;
-		//console.log("set "+key+" to "+val);
 		obj[key] = val;
 	}
 
