@@ -48,13 +48,37 @@ var Game = Game || {};
 		return item;
 	}
 
+	var YouReadVariants = [
+		"You read about ",
+		"The book is about ",
+		"The book tells you about ",
+		"The book describes ",
+		"Your literature is about ",
+		"Your literature tells you about ",
+		"Your literature describes ",
+	];
+
 	function readBooks(event) {
 		var item = popKnowledgeItem();
-		notify("You read about "+item.name+".");
+		var prefix = XRNG.choice(YouReadVariants);
+		notify(prefix+item.name+".");
 		STATE.knowledge += 11 * STATE.sanity;
 		incSanityBy(-0.1 * STATE.sanity);
 		updateUI();
 	}
+
+	var YouDreamVariants = [
+		"You dream about ",
+		"You have a nightmare about ",
+		"Your dreams are haunted by ",
+		"Your dreams are plagued by ",
+	];
+
+	var YouRestVariants = [
+		"After some sleep your head feels more clear.",
+		"Some sleep and you greatly refreshed.",
+		"After sleeping soundly you are ready for more.",
+	];
 
 	function getSleep(event) {
 		console.log("getSleep "+event);
@@ -63,10 +87,12 @@ var Game = Game || {};
 			var item = popKnowledgeItem();
 			STATE.knowledge += 4 * STATE.sanity;
 			incSanityBy(-0.02); // bad dreams
-			notify("Your dreams are haunted by "+item.name+".");
+			var prefix = XRNG.choice(YouDreamVariants);
+			notify(prefix+item.name+".");
 		} else {
 			incSanityBy(0.02); // rest
-			notify("After some sleep your head feels more clear.");
+			var msg = XRNG.choice(YouRestVariants);
+			notify(msg);
 		}
 		updateUI();
 	}
@@ -86,7 +112,6 @@ var Game = Game || {};
 	function randName() {
 		var firstNames = "Robert Randolph Herbert Joel Harley Hazel Richard Abraham Eliot Dan Ash Titus John Bran George Edward".split(" ");
 		var surNames = "Carter West Blake Manton Warren Heald Pickman Helsing Cain Williams Ness Crucian Kirowan Morn Challenger".split(" ");
-		console.log(surNames);
 		return XRNG.choice(firstNames) +" "+ XRNG.choice(surNames);
 	}
 
