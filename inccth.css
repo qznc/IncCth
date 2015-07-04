@@ -49,7 +49,7 @@ table a { text-decoration: underline; }
 #actions { margin: 3em 1em; }
 #actions li { margin: 1em 0; }
 
-#notifications { min-height: 30em; }
+#notifications { min-height: 10em; }
 #notifications .item { margin-top: 0.5em; }
 
 .clear,

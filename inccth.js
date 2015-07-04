@@ -223,7 +223,7 @@ var Game = Game || {};
 			notify("You, "+STATE.charName+", sit in a library.");
 		}
 		setInterval(saveGame, 30*1000);
-		setInterval(trimNotifications, 3*1000);
+		setInterval(trimNotifications, 1500);
 		connectButtons();
 		updateUI();
 	}
@@ -608,7 +608,8 @@ var Game = Game || {};
 
 	function trimNotifications() {
 		var notes = document.getElementById("notifications");
-		if (window.innerHeight * 0.8 < notes.offsetHeight) {
+		console.log("Check "+(window.innerHeight * 0.7)+" => "+notes.offsetHeight);
+		if (window.innerHeight * 0.7 < notes.offsetHeight) {
 			var item = notes.children[0];
 			item.className = "notification hidden";
 			setTimeout(function() {
