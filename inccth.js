@@ -132,7 +132,18 @@ var Game = Game || {};
 		STATE.knowledge = 0;
 		STATE.sanity = 1.0;
 		STATE.charName = randName();
-		notify("You, "+STATE.charName+", sit in a library.");
+		STATE.place = randPlace();
+		youSitInLibrary();
+	}
+
+	function randPlace() {
+		var places = [
+			"Arkham",
+			"Dunwich",
+			"Innsmouth",
+			"Kingsport",
+		];
+		return XRNG.choice(places);
 	}
 
 	function randName() {
@@ -220,7 +231,7 @@ var Game = Game || {};
 			resetState();
 		} else { /* load old game */
 			STATE = s;
-			notify("You, "+STATE.charName+", sit in a library.");
+			youSitInLibrary();
 		}
 		setInterval(saveGame, 30*1000);
 		setInterval(trimNotifications, 1500);
@@ -557,6 +568,7 @@ var Game = Game || {};
 			"globalSeed": globalSeed,
 			"currentSeed": globalSeed,
 			"charName": randName(),
+			"place": randPlace(),
 		};
 		initKnowledge();
 		/* remove all notifications */
@@ -565,7 +577,11 @@ var Game = Game || {};
 			notes.removeChild(notes.firstChild);
 		}
 		updateUI();
-		notify("You, "+STATE.charName+", sit in a library.");
+		youSitInLibrary();
+	}
+
+	function youSitInLibrary() {
+		notify("You, "+STATE.charName+", sit in a library in "+STATE.place+".");
 	}
 
 	var CRAZY_DIACRITICS = [ '\u030d', '\u0321', '\u033c', '\u0344', '\u0353', '\u0361' ];
