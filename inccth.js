@@ -43,10 +43,14 @@ var Game = Game || {};
 			if (item.knowledge > STATE.safeKnowledge + STATE.knowledge) continue;
 			filtered.push(i);
 		}
-		var index = XRNG.choice(filtered);
-		var item = rknowl[index];
-		STATE.readingKnowledge.splice(index,1);
-		return item;
+		if (filtered.length == 0) {
+			return {"name": "nothing new"};
+		} else {
+			var index = XRNG.choice(filtered);
+			var item = rknowl[index];
+			STATE.readingKnowledge.splice(index,1);
+			return item;
+		}
 	}
 
 	var YouReadVariants = [
