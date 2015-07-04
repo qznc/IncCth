@@ -23,6 +23,7 @@ var Game = Game || {};
 	const BEVERAGE_QUALITY_NAME = "disgusting,crappy,common,decent,nice,tasty,fine,exceptional,superb,godlike".split(",");
 	const MAX_DAYS_PER_STEP = 100;
 	const MAX_BOOZE_PER_HERO = 2;
+	const DEBUG = false;
 	var STATE = Object();
 	var XRNG; /* RNG for non state things like UI */
 
@@ -77,11 +78,18 @@ var Game = Game || {};
 	var YouRestVariants = [
 		"After some sleep your head feels more clear.",
 		"Some sleep and you greatly refreshed.",
-		"After sleeping soundly you are ready for more.",
+		"You wake up.",
+		"Everything is fine after a good nights sleep.",
+		"The comfortable warmth of your bed steadies your soul.",
+		"After sleeping soundly, you are ready for more.",
+		"You dream nothing at all. Refreshing.",
+		"Your dreams are cheerful. Interesting, given your literary preferences.",
+		"Your dreams are erotic. Is that good or bad for your sanity?",
+		"How wonderful some sleep can be.",
+		"No nightmares.",
 	];
 
 	function getSleep(event) {
-		console.log("getSleep "+event);
 		var rng = new RNG(STATE.currentSeed);
 		if (rng.nextFloat() > STATE.sanity) {
 			var item = popKnowledgeItem();
@@ -90,7 +98,7 @@ var Game = Game || {};
 			var prefix = XRNG.choice(YouDreamVariants);
 			notify(prefix+item.name+".");
 		} else {
-			incSanityBy(0.02); // rest
+			incSanityBy(0.04); // rest
 			var msg = XRNG.choice(YouRestVariants);
 			notify(msg);
 		}
@@ -100,7 +108,7 @@ var Game = Game || {};
 	function writeDown(event) {
 		var oldName = STATE.charName;
 		notify("You, "+oldName+", write everything down, so somebody else can take over.");
-		STATE.safeKnowledge = STATE.knowledge * STATE.sanity;
+		STATE.safeKnowledge += STATE.knowledge * STATE.sanity;
 		STATE.knowledge = 0;
 		STATE.sanity = 1.0;
 		STATE.charName = randName();
@@ -125,7 +133,11 @@ var Game = Game || {};
 		}
 		updateText("stat-knowledge", STATE.knowledge | 0);
 		updateText("stat-safeknowledge", STATE.safeKnowledge | 0);
-		updateText("stat-sanity", STATE.sanity.toFixed(2));
+		if (DEBUG) {
+			updateText("stat-sanity", STATE.sanity.toFixed(2));
+		} else {
+			updateText("stat-sanity", insaneText("feels good", 1.0 - STATE.sanity, stable_rng));
+		}
 		var buttons = document.getElementsByTagName("button");
 		for (var i=0; i<buttons.length; i++) {
 			var b = buttons[i];
@@ -156,16 +168,10 @@ var Game = Game || {};
 				hp.appendChild(e);
 			}, 1000);
 		}
-		if (STATE.sanity < 0.7) {
-			showButton("getSleep");
-		} else {
-			hideButton("getSleep");
-		}
-		if (STATE.knowledge > 50) {
-			showButton("writeDown");
-		} else {
-			hideButton("writeDown");
-		}
+		if (STATE.sanity < 0.76) showButton("getSleep");
+		if (STATE.sanity > 0.95) hideButton("getSleep");
+		if (STATE.knowledge > 50) showButton("writeDown");
+		if (STATE.knowledge < 10) hideButton("writeDown");
 	}
 
 	function startGame() {
@@ -180,6 +186,7 @@ var Game = Game || {};
 		setInterval(trimNotifications, 3*1000);
 		connectButtons();
 		updateUI();
+		notify("You, "+STATE.charName+", sit in a library.");
 	}
 
 	function connectButtons() {
@@ -367,7 +374,7 @@ var Game = Game || {};
 		n("a Bride of Cthulhu"                                   , 0.31);
 		n("the Leviathan of Diseased"                            , 0.81);
 		n("Cannoosut"                                            , 0.61);
-		n("a All-in-All"                                         , 0.91);
+		n("an All-in-All"                                        , 0.91);
 		n("a Greater-than-Gods"                                  , 0.91);
 		n("a Spawn of the Forgotten"                             , 0.91);
 		n("the Devil-dingo"                                      , 0.91);
@@ -484,7 +491,16 @@ var Game = Game || {};
 		n("a Feaster from the Stars"                             , 0.90);
 		n("the Sky-Devil"                                        , 0.90);
 
+		n("Yig", 0.80);
+		n("Cthylla", 0.80);
+		n("Yog-Sothoth", 0.80);
+		n("Shub-Niggurath", 0.80);
+		n("Azathoth", 0.80);
+		n("Nyarlathotep", 0.80);
+		n("Cthulhu", 0.70);
+
 		// TODO the names from https://en.wikipedia.org/wiki/Cthulhu_Mythos_deities
+		console.log("Knowledge items total: "+readknowledge.length);
 		STATE.readingKnowledge = readknowledge;
 	}
 
@@ -510,6 +526,7 @@ var Game = Game || {};
 			notes.removeChild(notes.firstChild);
 		}
 		updateUI();
+		notify("You, "+STATE.charName+", sit in a library.");
 	}
 
 	var CRAZY_DIACRITICS = [ '\u030d', '\u0321', '\u033c', '\u0344', '\u0353', '\u0361' ];
