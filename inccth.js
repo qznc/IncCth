@@ -23,7 +23,7 @@ var Game = Game || {};
 	const BEVERAGE_QUALITY_NAME = "disgusting,crappy,common,decent,nice,tasty,fine,exceptional,superb,godlike".split(",");
 	const MAX_DAYS_PER_STEP = 100;
 	const MAX_BOOZE_PER_HERO = 2;
-	const DEBUG = false;
+	const DEBUG = true;
 	var STATE = Object();
 	var XRNG; /* RNG for non state things like UI */
 
