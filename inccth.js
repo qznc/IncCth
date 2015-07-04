@@ -23,7 +23,7 @@ var Game = Game || {};
 	const BEVERAGE_QUALITY_NAME = "disgusting,crappy,common,decent,nice,tasty,fine,exceptional,superb,godlike".split(",");
 	const MAX_DAYS_PER_STEP = 100;
 	const MAX_BOOZE_PER_HERO = 2;
-	const DEBUG = true;
+	const DEBUG = false;
 	var STATE = Object();
 	var XRNG; /* RNG for non state things like UI */
 
@@ -119,16 +119,20 @@ var Game = Game || {};
 	];
 
 	function writeDown(event) {
-		var oldName = STATE.charName;
-		notify("You, "+oldName+", write everything down, so somebody else can take over.");
+		notify("You, "+STATE.charName+", write everything down, so somebody else can take over.");
 		STATE.safeKnowledge += STATE.knowledge * STATE.sanity;
+		newCharacter();
+		var msg = XRNG.choice(DeathKnowledge).replace("<name>", STATE.charName);
+		STATE.readingKnowledge.unshift({'name': msg, 'sanity': 0.99, 'knowledge': 1});
+		updateUI();
+	}
+
+	function newCharacter() {
+		var oldName = STATE.charName;
 		STATE.knowledge = 0;
 		STATE.sanity = 1.0;
 		STATE.charName = randName();
 		notify("You, "+STATE.charName+", sit in a library.");
-		var msg = XRNG.choice(DeathKnowledge).replace("<name>", STATE.charName);
-		STATE.readingKnowledge.unshift({'name': msg, 'sanity': 0.99, 'knowledge': 1});
-		updateUI();
 	}
 
 	function randName() {
@@ -140,6 +144,8 @@ var Game = Game || {};
 	function updateUI() {
 		var rng = new RNG(STATE.currentSeed);
 		STATE.currentSeed = rng.nextInt();
+
+		sanityCheck();
 
 		var stable_rng = new RNG(STATE.globalSeed);
 		function updateText(elemid,html) {
@@ -165,6 +171,12 @@ var Game = Game || {};
 			b.innerHTML = insaneText(text, 1.0 - STATE.sanity, stable_rng);
 		}
 		updateButtons();
+	}
+
+	function sanityCheck() {
+		if (STATE.sanity > 0.1) return; /* everthing is fine */
+		notify("You, "+STATE.charName+", lost your sanity. Unable to write or talk any coherent sentence, your knowledge is lost.");
+		newCharacter();
 	}
 
 	function updateButtons() {
