@@ -123,7 +123,14 @@ var Game = Game || {};
 	];
 
 	function writeDown(event) {
-		notify("You, "+STATE.charName+", write everything down, so somebody else can take over.");
+		var explanation = "";
+		if (STATE.sanity < 0.8)
+			explanation = " Some of your writing comes out as gibberish, though. Not all your knowledge got preserved for posterity.";
+		if (STATE.sanity < 0.4)
+			explanation = " Sadly, most of your text is complete gibberish and nobody will ever understand it.";
+		if (STATE.sanity < 0.2)
+			explanation = " Unfortunately, nearly everything you write is incomprehensible gibberish. Most of your knowledge is lost.";
+		notify("You, "+STATE.charName+", write everything down, so somebody else can take over."+explanation);
 		STATE.safeKnowledge += STATE.knowledge * STATE.sanity;
 		newCharacter();
 		var msg = XRNG.choice(DeathKnowledge).replace("<name>", STATE.charName);
