@@ -202,7 +202,7 @@ var Game = Game || {};
 	}
 
 	function randName() {
-		var firstNames = "Robert Randolph Herbert Joel Harley Hazel Richard Abraham Eliot Dan Ash Titus John Bran George Edward".split(" ");
+		var firstNames = "Robert Randolph Herbert Joel Harley Richard Abraham Eliot Dan Ash Titus John Bran George Edward".split(" ");
 		var surNames = "Carter West Blake Manton Warren Heald Pickman Helsing Cain Williams Ness Crucian Kirowan Morn Challenger".split(" ");
 		return XRNG.choice(firstNames) +" "+ XRNG.choice(surNames);
 	}
