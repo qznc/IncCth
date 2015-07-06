@@ -141,7 +141,7 @@ var Game = Game || {};
 			msg = popAppendRand(0.4, NightmareHints, msg);
 			notify(msg);
 		} else {
-			incSanityBy(0.04); // rest
+			incSanityBy(0.06); // rest
 			var msg = XRNG.choice(YouRestVariants);
 			msg = popAppendRand(0.4, RestHints, msg);
 			notify(msg);
