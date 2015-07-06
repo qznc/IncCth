@@ -54,13 +54,13 @@ var Game = Game || {};
 	}
 
 	var YouReadVariants = [
-		"You read about ",
+		"He reads about ",
 		"The book is about ",
-		"The book tells you about ",
+		"The book tells him about ",
 		"The book describes ",
-		"Your literature is about ",
-		"Your literature tells you about ",
-		"Your literature describes ",
+		"His literature is about ",
+		"His literature tells him about ",
+		"His literature describes ",
 	];
 
 	function readBooks(event) {
@@ -73,22 +73,22 @@ var Game = Game || {};
 	}
 
 	var YouDreamVariants = [
-		"You dream about ",
-		"You have a nightmare about ",
-		"Your dreams are haunted by ",
-		"Your dreams are plagued by ",
+		"He dreams about ",
+		"He has a nightmare about ",
+		"His dreams are haunted by ",
+		"His dreams are plagued by ",
 	];
 
 	var YouRestVariants = [
-		"After some sleep your head feels more clear.",
-		"Some sleep and you greatly refreshed.",
-		"You wake up.",
+		"After some sleep his head feels more clear.",
+		"Some sleep and he is greatly refreshed.",
+		"He wakes up.",
 		"Everything is fine after a good nights sleep.",
-		"The comfortable warmth of your bed steadies your soul.",
-		"After sleeping soundly, you are ready for more.",
-		"You dream nothing at all. Refreshing.",
-		"Your dreams are cheerful. Interesting, given your literary preferences.",
-		"Your dreams are erotic. Is that good or bad for your sanity?",
+		"The comfortable warmth of his bed steadies his soul.",
+		"After sleeping soundly, he is ready for more.",
+		"He dreams nothing at all. Refreshing.",
+		"His dreams are cheerful. Interesting, given his literary preferences.",
+		"His dreams are erotic. Is that good or bad for his sanity?",
 		"How wonderful some sleep can be.",
 		"No nightmares.",
 	];
@@ -125,12 +125,12 @@ var Game = Game || {};
 	function writeDown(event) {
 		var explanation = "";
 		if (STATE.sanity < 0.8)
-			explanation = " Some of your writing comes out as gibberish, though. Not all your knowledge got preserved for posterity.";
+			explanation = " Some of his writing comes out as gibberish, though. Not all his knowledge got preserved for posterity.";
 		if (STATE.sanity < 0.4)
-			explanation = " Sadly, most of your text is complete gibberish and nobody will ever understand it.";
+			explanation = " Sadly, most of his text is complete gibberish and nobody will ever understand it.";
 		if (STATE.sanity < 0.2)
-			explanation = " Unfortunately, nearly everything you write is incomprehensible gibberish. Most of your knowledge is lost.";
-		notify("You, "+STATE.charName+", write everything down, so somebody else can take over."+explanation);
+			explanation = " Unfortunately, nearly everything he writes is incomprehensible gibberish. Most of his knowledge is lost.";
+		notify(STATE.charName+" writes everything down, so somebody else can take over."+explanation);
 		STATE.safeKnowledge += STATE.knowledge * STATE.sanity;
 		newCharacter();
 		var msg = XRNG.choice(DeathKnowledge).replace("<name>", STATE.charName);
@@ -204,7 +204,7 @@ var Game = Game || {};
 
 	function sanityCheck() {
 		if (STATE.sanity > 0.1) return; /* everthing is fine */
-		notify("You, "+STATE.charName+", lost your sanity. Unable to write or talk any coherent sentence, your knowledge is lost.");
+		notify(STATE.charName+" lost his sanity. Unable to write or talk any coherent sentence, his knowledge is lost.");
 		newCharacter();
 	}
 
@@ -599,7 +599,7 @@ var Game = Game || {};
 	}
 
 	function youSitInLibrary() {
-		notify("You, "+STATE.charName+", sit in a library in "+STATE.place+".");
+		notify(STATE.charName+" sits in a library in "+STATE.place+".");
 	}
 
 	var CRAZY_DIACRITICS = [ '\u030d', '\u0321', '\u033c', '\u0344', '\u0353', '\u0361' ];
