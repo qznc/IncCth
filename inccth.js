@@ -243,7 +243,10 @@ var Game = Game || {};
 	function completenessCheck() {
 		if (STATE.readingKnowledge.length > 0) return;
 		resetState();
-		notify("In an alternate reality, mankind figured out the Great Old Ones and destroyed them. (You won. Game has been reset.)");
+		var heroes = STATE.deadHeroes.join(", ")
+		notifyHTML("<b>You win!</b><br/>Due to the honorable sacrifices of "+heroes+", and "+STATE.charName+" mankind triumphed, but only the last of those survived. We put Cthulhu back to sleep. We pray that more heroes like those emerge, when his time comes again.");
+		notify("(game reset) ... in an alternate reality, mankind figured it out.");
+		youSitInLibrary();
 	}
 
 	function sanityCheck() {
@@ -287,11 +290,12 @@ var Game = Game || {};
 	}
 
 	function startGame() {
-		XRNG = new RNG(Date.now());
 		var s = JSON.parse(window.localStorage.getItem(ID_GAMESTATE));
 		if (!s) { /* new game, set initial state */
 			resetState();
+			youSitInLibrary();
 		} else { /* load old game */
+			XRNG = new RNG(Date.now());
 			STATE = s;
 			youSitInLibrary();
 		}
@@ -308,7 +312,7 @@ var Game = Game || {};
 		connect("readBooks", readBooks);
 		connect("getSleep", getSleep);
 		connect("writeDown", writeDown);
-		connect("reset", resetState);
+		connect("reset", clickReset);
 	}
 
 	function addElementWithText(parent, tag, text) {
@@ -335,6 +339,8 @@ var Game = Game || {};
 		function n(name,sanity) {
 			readknowledge.push({'name': name, 'sanity': sanity, 'knowledge': minimum_knowledge++});
 		}
+		n("Abdul Alhazred", 0.6 );
+		n("the Necronomicon", 0.4 );
 		n("an entity of living sound", 1.0 );
 		n("a humanoid torso with tentacles instead of limbs", 1.0 );
 		n("a tall, shadowy humanoid figure with yellow glowing eyes and strange protrusions like the branches of dead trees", 1.0 );
@@ -616,7 +622,13 @@ var Game = Game || {};
 		STATE.readingKnowledge = readknowledge;
 	}
 
+	function clickReset() {
+		resetState();
+		youSitInLibrary();
+	}
+
 	function resetState() {
+		XRNG = new RNG(Date.now());
 		var now = new Date();
 		var globalSeed = (1+now.getDay()) * 1000;
 		assert (globalSeed > GAME_VERSION, globalSeed+" <= "+GAME_VERSION);
@@ -631,6 +643,7 @@ var Game = Game || {};
 			"currentSeed": globalSeed,
 			"charName": randName(),
 			"place": randPlace(),
+			"deadHeroes": ["Abdul Alhazred"],
 		};
 		initKnowledge();
 		/* remove all notifications */
@@ -639,7 +652,6 @@ var Game = Game || {};
 			notes.removeChild(notes.firstChild);
 		}
 		updateUI();
-		youSitInLibrary();
 	}
 
 	function youSitInLibrary() {
@@ -669,13 +681,31 @@ var Game = Game || {};
 	}
 
 	function notify(msg) {
+		msg = insaneText(msg, 1.0 - STATE.sanity, XRNG);
+		notifyClear(msg);
+	}
+
+	function notifyClear(msg) {
 		var timeline = document.getElementById("notifications");
 		var item = document.createElement("div");
 		item.className = "notification hidden";
 		var p = document.createElement("p");
-		msg = insaneText(msg, 1.0 - STATE.sanity, XRNG);
 		var t = document.createTextNode(msg);
 		p.appendChild(t);
+		item.appendChild(p);
+		timeline.appendChild(item);
+		setTimeout(function() {
+			item.className = "item";
+		}, 0);
+		trimNotifications();
+	}
+
+	function notifyHTML(msg) {
+		var timeline = document.getElementById("notifications");
+		var item = document.createElement("div");
+		item.className = "notification hidden";
+		var p = document.createElement("p");
+		p.innerHTML = msg;
 		item.appendChild(p);
 		timeline.appendChild(item);
 		setTimeout(function() {
