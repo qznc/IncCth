@@ -26,6 +26,7 @@ var Game = Game || {};
 	const DEBUG = false;
 	var STATE = Object();
 	var XRNG; /* RNG for non state things like UI */
+	var showed_common_knowledge_hint = false;
 
 	function incSanityBy(value) {
 		var x = STATE.sanity + value;
@@ -93,6 +94,42 @@ var Game = Game || {};
 		"No nightmares.",
 	];
 
+	var RestHints = [
+		" Another day, another step to learn about the most dangerous horrors of the universe.",
+		" Whatever, he is on a mission. Probably the most important mission of the planet.",
+		" Well, somebody has to save mankind.",
+		" He had better jobs, but none was more important.",
+		" He wanted to crawl back to sleep, but this had to be done.",
+		" Was somebody else doing this as well?",
+		" He had a good reason to work though. Save the world.",
+	];
+
+	var NightmareHints = [
+		" Sometimes sleep has the completely wrong result.",
+		" He was getting insane and nightmares increased.",
+		" He read too much and now his dreams were working against him.",
+		" Sleep was not a friend anymore. When did it become the enemy?",
+		" Do sane people have nightmares as well?",
+		" He remembered the time, when sleep was nothing to be afraid of. Could he get back?",
+		" Sometimes dreaming makes it worse.",
+		" When did the horror enter his dreams?",
+		" How to get back to sanity? Was there hope?",
+		" Maybe he should write down what he learned, before only gibberish comes out.",
+		" Usually sleeping brought back the sanity, but not this time.",
+		" Maybe try sleeping again?",
+		" He tried to write down his nightmare, but it was unreadable.",
+		" He tried to put his dreams to text, but only gibberish was on the page.",
+	];
+
+	function popAppendRand(probability, fromArr, toStr) {
+		if (fromArr.length == 0) return toStr;
+		if (XRNG.nextFloat() > probability) return toStr;
+		var i = XRNG.nextRange(0,fromArr.length);
+		var txt = fromArr[i];
+		fromArr.splice(i,1);
+		return toStr + txt;
+	}
+
 	function getSleep(event) {
 		var rng = new RNG(STATE.currentSeed);
 		if (rng.nextFloat() > STATE.sanity) {
@@ -100,10 +137,13 @@ var Game = Game || {};
 			STATE.knowledge += 4 * STATE.sanity;
 			incSanityBy(-0.02); // bad dreams
 			var prefix = XRNG.choice(YouDreamVariants);
-			notify(prefix+item.name+".");
+			var msg = prefix+item.name+".";
+			msg = popAppendRand(0.4, NightmareHints, msg);
+			notify(msg);
 		} else {
 			incSanityBy(0.04); // rest
 			var msg = XRNG.choice(YouRestVariants);
+			msg = popAppendRand(0.4, RestHints, msg);
 			notify(msg);
 		}
 		updateUI();
@@ -130,6 +170,10 @@ var Game = Game || {};
 			explanation = " Sadly, most of his text is complete gibberish and nobody will ever understand it.";
 		if (STATE.sanity < 0.2)
 			explanation = " Unfortunately, nearly everything he writes is incomprehensible gibberish. Most of his knowledge is lost.";
+		if (!showed_common_knowledge_hint) {
+			explanation += " Common knowledge means it cannot be lost.";
+			showed_common_knowledge_hint = true;
+		}
 		notify(STATE.charName+" writes everything down, so somebody else can take over."+explanation);
 		STATE.safeKnowledge += STATE.knowledge * STATE.sanity;
 		newCharacter();
